@@ -90,6 +90,9 @@ Set these in `Vercel -> Project -> Settings -> Environment Variables`:
 
 - `DATABASE_URL`
 - `DIRECT_URL`
+- `JWT_SECRET` (required in production)
+- `JWT_EXPIRES_IN` (optional, default `1h`)
+- `AUTH_USERS_JSON` (optional JSON array for local auth users)
 - `NODE_ENV=production` (recommended)
 
 Do not commit `.env` to Git.
@@ -101,6 +104,18 @@ After deployment, verify:
 - `https://<your-vercel-domain>/health`
 - `https://<your-vercel-domain>/api/docs`
 - `https://<your-vercel-domain>/vessels`
+
+## Auth and roles
+
+Read endpoints are public. Create/update/delete endpoints require `Bearer` JWT with role `admin` or `manager`.
+
+Use `POST /auth/login` to obtain a token, then authorize in Swagger (`/api/docs`) with the `access-token` scheme.
+
+Default local users (only when `AUTH_USERS_JSON` is not set):
+
+- `admin` / `admin123` -> `admin`
+- `manager` / `manager123` -> `manager`
+- `user` / `user123` -> `user`
 
 ## Resources
 

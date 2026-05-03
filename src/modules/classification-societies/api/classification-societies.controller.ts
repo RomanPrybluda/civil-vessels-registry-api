@@ -7,15 +7,23 @@ import {
   ParseUUIDPipe,
   Post,
   Put,
+  UseGuards,
 } from '@nestjs/common';
 import {
-  ApiCreatedResponse,
+  ApiBearerAuth,
   ApiConflictResponse,
+  ApiCreatedResponse,
+  ApiForbiddenResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import { Roles } from '../../auth/decorators/roles.decorator';
+import { Role } from '../../auth/domain/role.enum';
+import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../../auth/guards/roles.guard';
 import { ClassificationSocietiesService } from '../application/classification-societies.service';
 import { ClassificationSocietyResponseDto } from './dto/classification-society-response.dto';
 import { CreateClassificationSocietyDto } from './dto/create-classification-society.dto';
@@ -29,11 +37,16 @@ export class ClassificationSocietiesController {
   ) {}
 
   @Post()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN, Role.MANAGER)
+  @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Create classification society' })
   @ApiCreatedResponse({ type: ClassificationSocietyResponseDto })
   @ApiConflictResponse({
     description: 'Classification society with same name or shortName exists',
   })
+  @ApiUnauthorizedResponse({ description: 'Missing or invalid token' })
+  @ApiForbiddenResponse({ description: 'Role is not allowed to modify data' })
   create(
     @Body() dto: CreateClassificationSocietyDto,
   ): Promise<ClassificationSocietyResponseDto> {
@@ -58,12 +71,17 @@ export class ClassificationSocietiesController {
   }
 
   @Put(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN, Role.MANAGER)
+  @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Update classification society by id' })
   @ApiOkResponse({ type: ClassificationSocietyResponseDto })
   @ApiNotFoundResponse({ description: 'Classification society not found' })
   @ApiConflictResponse({
     description: 'Classification society with same name or shortName exists',
   })
+  @ApiUnauthorizedResponse({ description: 'Missing or invalid token' })
+  @ApiForbiddenResponse({ description: 'Role is not allowed to modify data' })
   update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: UpdateClassificationSocietyDto,
@@ -72,9 +90,14 @@ export class ClassificationSocietiesController {
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN, Role.MANAGER)
+  @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Delete classification society by id' })
   @ApiOkResponse({ type: ClassificationSocietyResponseDto })
   @ApiNotFoundResponse({ description: 'Classification society not found' })
+  @ApiUnauthorizedResponse({ description: 'Missing or invalid token' })
+  @ApiForbiddenResponse({ description: 'Role is not allowed to modify data' })
   remove(
     @Param('id', ParseUUIDPipe) id: string,
   ): Promise<ClassificationSocietyResponseDto> {
