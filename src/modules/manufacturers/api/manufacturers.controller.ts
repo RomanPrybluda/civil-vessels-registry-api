@@ -29,8 +29,8 @@ import { CreateManufacturerDto } from './dto/create-manufacturer.dto';
 import { ManufacturerResponseDto } from './dto/manufacturer-response.dto';
 import { UpdateManufacturerDto } from './dto/update-manufacturer.dto';
 
-@ApiTags('manufacturers')
-@Controller('manufacturers')
+@ApiTags('vessel-types')
+@Controller('vessel-types')
 export class ManufacturersController {
   constructor(private readonly manufacturersService: ManufacturersService) {}
 

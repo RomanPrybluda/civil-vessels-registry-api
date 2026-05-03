@@ -29,8 +29,8 @@ import { ClassificationSocietyResponseDto } from './dto/classification-society-r
 import { CreateClassificationSocietyDto } from './dto/create-classification-society.dto';
 import { UpdateClassificationSocietyDto } from './dto/update-classification-society.dto';
 
-@ApiTags('classification-societies')
-@Controller('classification-societies')
+@ApiTags('class-societies')
+@Controller('class-societies')
 export class ClassificationSocietiesController {
   constructor(
     private readonly classificationSocietiesService: ClassificationSocietiesService,

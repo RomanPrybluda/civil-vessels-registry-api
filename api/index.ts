@@ -22,6 +22,7 @@ async function bootstrap() {
           transform: true,
         }),
       );
+      app.setGlobalPrefix('api');
 
       const config = new DocumentBuilder()
         .setTitle('Civil Vessels Registry API')
@@ -38,9 +39,9 @@ async function bootstrap() {
         .addTag('health')
         .addTag('auth')
         .addTag('vessels')
-        .addTag('manufacturers')
-        .addTag('shipbuilders')
-        .addTag('classification-societies')
+        .addTag('vessel-types')
+        .addTag('builders')
+        .addTag('class-societies')
         .build();
 
       const document = SwaggerModule.createDocument(app, config);
@@ -53,8 +54,6 @@ async function bootstrap() {
           'https://unpkg.com/swagger-ui-dist@5/swagger-ui-standalone-preset.js',
         ],
       });
-
-      app.setGlobalPrefix('');
 
       await app.init();
       return server;
