@@ -1,145 +1,70 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Civil Vessels Registry API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Backend API for a civil cargo vessels registry.  
+The project is built with NestJS + Prisma + PostgreSQL and provides CRUD operations for vessels, manufacturers, and classification societies.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Production
 
-## Description
+- API: https://civil-vessels-registry-api.vercel.app/
+- Swagger UI: https://civil-vessels-registry-api.vercel.app/api/docs
+- Healthcheck: https://civil-vessels-registry-api.vercel.app/health
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Key Features
 
-## Project setup
+- Vessel registry with IMO number, type, tonnage, dimensions, and build year.
+- Reference directories for manufacturers and classification societies.
+- Search, filtering, sorting, and pagination for vessel lists.
+- JWT authentication and role-based authorization (`admin`, `manager`, `user`).
+- Input validation and Swagger API documentation.
 
-```bash
-$ npm install
-```
+## API Modules
 
-## Compile and run the project
+- `auth`:
+  - `POST /auth/login` - get JWT token
+  - `GET /auth/me` - get current authenticated user
+- `vessels`:
+  - `GET /vessels`, `GET /vessels/:id`, `GET /vessels/imo/:imoNumber`
+  - `POST /vessels`, `PUT /vessels/:id`, `DELETE /vessels/:id`
+- `manufacturers`:
+  - `GET /manufacturers`, `GET /manufacturers/:id`
+  - `POST /manufacturers`, `PUT /manufacturers/:id`, `DELETE /manufacturers/:id`
+- `classification-societies`:
+  - `GET /classification-societies`, `GET /classification-societies/:id`
+  - `POST /classification-societies`, `PUT /classification-societies/:id`, `DELETE /classification-societies/:id`
+- `health`:
+  - `GET /health`
 
-```bash
-# development
-$ npm run start
+`GET` endpoints are public. Data modification endpoints (`POST/PUT/DELETE`) require a `Bearer` token with `admin` or `manager` role.
 
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
-```
-
-## Run tests
+## Local Run
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+npm install
+npm run build
+npm run start:dev
 ```
 
-## Deployment
+The application starts on `http://localhost:3000` by default.
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+## Environment Variables
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
-
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Deploy to Vercel
-
-### 1. Connect GitHub repository
-
-1. Push the `feature/vercel-deployment` branch to GitHub.
-2. In Vercel dashboard, click `Add New...` -> `Project`.
-3. Import repository `civil-vessels-registry-api`.
-4. Framework preset: `Other`.
-5. Root directory: repository root.
-6. Build command: `npm run build`.
-7. Install command: `npm install`.
-
-Vercel uses `api/index.ts` as the serverless entrypoint and `vercel.json` rewrites all routes to this function.
-
-### 2. Required environment variables
-
-Set these in `Vercel -> Project -> Settings -> Environment Variables`:
+Required:
 
 - `DATABASE_URL`
 - `DIRECT_URL`
-- `JWT_SECRET` (required in production)
-- `JWT_EXPIRES_IN` (optional, default `1h`)
-- `AUTH_USERS_JSON` (optional JSON array for local auth users)
-- `NODE_ENV=production` (recommended)
+- `JWT_SECRET`
 
-Do not commit `.env` to Git.
+Optional:
 
-### 3. Production verification URLs
+- `JWT_EXPIRES_IN` (default: `1h`)
+- `AUTH_USERS_JSON` (JSON array of local users)
+- `NODE_ENV=production`
 
-After deployment, verify:
+## Tests and Useful Commands
 
-- `https://<your-vercel-domain>/health`
-- `https://<your-vercel-domain>/api/docs`
-- `https://<your-vercel-domain>/vessels`
+```bash
+npm run test
+npm run test:e2e
+npm run test:cov
+```
 
-## Auth and roles
-
-Read endpoints are public. Create/update/delete endpoints require `Bearer` JWT with role `admin` or `manager`.
-
-Use `POST /auth/login` to obtain a token, then authorize in Swagger (`/api/docs`) with the `access-token` scheme.
-
-Default local users (only when `AUTH_USERS_JSON` is not set):
-
-- `admin` / `admin123` -> `admin`
-- `manager` / `manager123` -> `manager`
-- `user` / `user123` -> `user`
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
