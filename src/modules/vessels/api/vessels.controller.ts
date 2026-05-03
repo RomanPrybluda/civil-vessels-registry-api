@@ -22,7 +22,7 @@ import { VesselsService } from '../application/vessels.service';
 import { CreateVesselDto } from './dto/create-vessel.dto';
 import { UpdateVesselDto } from './dto/update-vessel.dto';
 import { VesselListQueryDto } from './dto/vessel-list-query.dto';
-import { VesselResponseDto } from './dto/vessel-response.dto';
+import { VesselListResponseDto, VesselResponseDto } from './dto/vessel-response.dto';
 
 @ApiTags('vessels')
 @Controller('vessels')
@@ -40,9 +40,9 @@ export class VesselsController {
 
   @Get()
   @ApiOperation({ summary: 'Get vessels with filters' })
-  @ApiOkResponse({ type: VesselResponseDto, isArray: true })
+  @ApiOkResponse({ type: VesselListResponseDto })
   @ApiBadRequestResponse({ description: 'Invalid filter values' })
-  findAll(@Query() query: VesselListQueryDto): Promise<VesselResponseDto[]> {
+  findAll(@Query() query: VesselListQueryDto): Promise<VesselListResponseDto> {
     return this.vesselsService.findAll(query);
   }
 

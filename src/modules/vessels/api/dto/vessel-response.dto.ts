@@ -1,5 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { VesselWithDetails } from '../../infrastructure/vessels.repository';
+import { SortOrder, VesselSortBy } from './vessel-list-query.dto';
 
 class VesselClassificationSocietyResponseDto {
   @ApiProperty({ format: 'uuid' })
@@ -199,4 +200,37 @@ export class VesselResponseDto {
       updatedAt: entity.updatedAt.toISOString(),
     };
   }
+}
+
+class VesselListPaginationDto {
+  @ApiProperty({ example: 1 })
+  page: number;
+
+  @ApiProperty({ example: 20 })
+  pageSize: number;
+
+  @ApiProperty({ example: 0 })
+  totalItems: number;
+
+  @ApiProperty({ example: 0 })
+  totalPages: number;
+}
+
+class VesselListSortDto {
+  @ApiProperty({ enum: VesselSortBy, example: VesselSortBy.CREATED_AT })
+  sortBy: VesselSortBy;
+
+  @ApiProperty({ enum: SortOrder, example: SortOrder.DESC })
+  sortOrder: SortOrder;
+}
+
+export class VesselListResponseDto {
+  @ApiProperty({ type: VesselResponseDto, isArray: true })
+  items: VesselResponseDto[];
+
+  @ApiProperty({ type: VesselListPaginationDto })
+  pagination: VesselListPaginationDto;
+
+  @ApiProperty({ type: VesselListSortDto })
+  sort: VesselListSortDto;
 }

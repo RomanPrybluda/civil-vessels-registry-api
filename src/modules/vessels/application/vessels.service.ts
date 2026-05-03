@@ -7,10 +7,22 @@ import {
 import { Prisma } from '@prisma/client';
 import { CreateVesselDto } from '../api/dto/create-vessel.dto';
 import { UpdateVesselDto } from '../api/dto/update-vessel.dto';
-import { VesselListQueryDto } from '../api/dto/vessel-list-query.dto';
-import { VesselResponseDto } from '../api/dto/vessel-response.dto';
+import {
+  SortOrder,
+  VesselListQueryDto,
+  VesselSortBy,
+} from '../api/dto/vessel-list-query.dto';
+import {
+  VesselListResponseDto,
+  VesselResponseDto,
+} from '../api/dto/vessel-response.dto';
 import { Vessel, VesselEquipmentProps, VesselModelProps } from '../domain/vessel.model';
 import { VesselWithDetails, VesselsRepository } from '../infrastructure/vessels.repository';
+
+const DEFAULT_PAGE = 1;
+const DEFAULT_PAGE_SIZE = 20;
+const DEFAULT_SORT_BY = VesselSortBy.CREATED_AT;
+const DEFAULT_SORT_ORDER = SortOrder.DESC;
 
 @Injectable()
 export class VesselsService {
@@ -33,7 +45,7 @@ export class VesselsService {
     }
   }
 
-  async findAll(query: VesselListQueryDto): Promise<VesselResponseDto[]> {
+  async findAll(query: VesselListQueryDto): Promise<VesselListResponseDto> {
     if (
       query.builtYearFrom !== undefined &&
       query.builtYearTo !== undefined &&
@@ -42,8 +54,34 @@ export class VesselsService {
       throw new BadRequestException('builtYearFrom cannot be greater than builtYearTo');
     }
 
-    const entities = await this.vesselsRepository.findMany(query);
-    return entities.map((entity) => VesselResponseDto.fromEntity(entity));
+    const page = query.page ?? DEFAULT_PAGE;
+    const pageSize = query.pageSize ?? DEFAULT_PAGE_SIZE;
+    const sortBy = query.sortBy ?? DEFAULT_SORT_BY;
+    const sortOrder = query.sortOrder ?? DEFAULT_SORT_ORDER;
+
+    const { items, totalItems } = await this.vesselsRepository.findMany({
+      query,
+      page,
+      pageSize,
+      sortBy,
+      sortOrder,
+    });
+
+    const totalPages = totalItems === 0 ? 0 : Math.ceil(totalItems / pageSize);
+
+    return {
+      items: items.map((entity) => VesselResponseDto.fromEntity(entity)),
+      pagination: {
+        page,
+        pageSize,
+        totalItems,
+        totalPages,
+      },
+      sort: {
+        sortBy,
+        sortOrder,
+      },
+    };
   }
 
   async findOne(id: string): Promise<VesselResponseDto> {

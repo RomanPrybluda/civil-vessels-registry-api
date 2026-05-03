@@ -1,7 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../../../database/prisma.service';
-import { VesselListQueryDto } from '../api/dto/vessel-list-query.dto';
+import {
+  SortOrder,
+  VesselListQueryDto,
+  VesselSortBy,
+} from '../api/dto/vessel-list-query.dto';
 import {
   VesselEquipmentCollectionsPersistencePayload,
   VesselPersistencePayload,
@@ -60,54 +64,40 @@ export type VesselWithDetails = Prisma.VesselGetPayload<{
   include: typeof vesselWithDetailsInclude;
 }>;
 
+export interface VesselListOptions {
+  query: VesselListQueryDto;
+  page: number;
+  pageSize: number;
+  sortBy: VesselSortBy;
+  sortOrder: SortOrder;
+}
+
+export interface VesselListResult {
+  items: VesselWithDetails[];
+  totalItems: number;
+}
+
 @Injectable()
 export class VesselsRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  findMany(filters: VesselListQueryDto): Promise<VesselWithDetails[]> {
-    const where: Prisma.VesselWhereInput = {};
+  async findMany(options: VesselListOptions): Promise<VesselListResult> {
+    const where = this.buildWhere(options.query);
+    const orderBy = this.buildOrderBy(options.sortBy, options.sortOrder);
+    const skip = (options.page - 1) * options.pageSize;
 
-    if (filters.name) {
-      where.name = {
-        contains: filters.name,
-        mode: 'insensitive',
-      };
-    }
+    const [items, totalItems] = await this.prisma.$transaction([
+      this.prisma.vessel.findMany({
+        where,
+        include: vesselWithDetailsInclude,
+        orderBy,
+        skip,
+        take: options.pageSize,
+      }),
+      this.prisma.vessel.count({ where }),
+    ]);
 
-    if (filters.imoNumber) {
-      where.imoNumber = {
-        contains: filters.imoNumber,
-      };
-    }
-
-    if (filters.vesselType) {
-      where.vesselType = {
-        contains: filters.vesselType,
-        mode: 'insensitive',
-      };
-    }
-
-    if (filters.classificationSocietyId) {
-      where.classificationSocietyId = filters.classificationSocietyId;
-    }
-
-    if (filters.builtYearFrom !== undefined || filters.builtYearTo !== undefined) {
-      where.builtYear = {};
-
-      if (filters.builtYearFrom !== undefined) {
-        where.builtYear.gte = filters.builtYearFrom;
-      }
-
-      if (filters.builtYearTo !== undefined) {
-        where.builtYear.lte = filters.builtYearTo;
-      }
-    }
-
-    return this.prisma.vessel.findMany({
-      where,
-      include: vesselWithDetailsInclude,
-      orderBy: { createdAt: 'desc' },
-    });
+    return { items, totalItems };
   }
 
   findById(id: string): Promise<VesselWithDetails | null> {
@@ -188,6 +178,97 @@ export class VesselsRepository {
     });
 
     return count === uniqueIds.length;
+  }
+
+  private buildWhere(query: VesselListQueryDto): Prisma.VesselWhereInput {
+    const where: Prisma.VesselWhereInput = {};
+
+    if (query.name) {
+      where.name = {
+        contains: query.name,
+        mode: 'insensitive',
+      };
+    }
+
+    if (query.imoNumber) {
+      where.imoNumber = {
+        contains: query.imoNumber,
+      };
+    }
+
+    if (query.vesselType) {
+      where.vesselType = {
+        contains: query.vesselType,
+        mode: 'insensitive',
+      };
+    }
+
+    if (query.classificationSocietyId) {
+      where.classificationSocietyId = query.classificationSocietyId;
+    }
+
+    if (query.builtYearFrom !== undefined || query.builtYearTo !== undefined) {
+      where.builtYear = {};
+
+      if (query.builtYearFrom !== undefined) {
+        where.builtYear.gte = query.builtYearFrom;
+      }
+
+      if (query.builtYearTo !== undefined) {
+        where.builtYear.lte = query.builtYearTo;
+      }
+    }
+
+    if (query.search) {
+      const search = query.search.trim();
+
+      if (search) {
+        where.OR = [
+          {
+            name: {
+              contains: search,
+              mode: 'insensitive',
+            },
+          },
+          {
+            imoNumber: {
+              contains: search,
+            },
+          },
+          {
+            vesselType: {
+              contains: search,
+              mode: 'insensitive',
+            },
+          },
+        ];
+      }
+    }
+
+    return where;
+  }
+
+  private buildOrderBy(
+    sortBy: VesselSortBy,
+    sortOrder: SortOrder,
+  ): Prisma.VesselOrderByWithRelationInput {
+    switch (sortBy) {
+      case VesselSortBy.NAME:
+        return { name: sortOrder };
+      case VesselSortBy.IMO_NUMBER:
+        return { imoNumber: sortOrder };
+      case VesselSortBy.VESSEL_TYPE:
+        return { vesselType: sortOrder };
+      case VesselSortBy.BUILT_YEAR:
+        return { builtYear: sortOrder };
+      case VesselSortBy.DEADWEIGHT:
+        return { deadweight: sortOrder };
+      case VesselSortBy.GROSS_TONNAGE:
+        return { grossTonnage: sortOrder };
+      case VesselSortBy.CREATED_AT:
+      default:
+        return { createdAt: sortOrder };
+    }
   }
 
   private async deleteEquipmentCollections(
