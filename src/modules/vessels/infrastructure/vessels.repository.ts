@@ -18,7 +18,10 @@ type VesselTextFilter = {
 type VesselWhereInput = {
   name?: VesselTextFilter;
   imoNumber?: { contains: string };
-  vesselType?: VesselTextFilter;
+  vesselTypeId?: string;
+  vesselType?: {
+    name: VesselTextFilter;
+  };
   classificationSocietyId?: string;
   manufacturerId?: string;
   shipbuilderId?: string;
@@ -29,14 +32,18 @@ type VesselWhereInput = {
   OR?: Array<{
     name?: VesselTextFilter;
     imoNumber?: { contains: string };
-    vesselType?: VesselTextFilter;
+    vesselType?: {
+      name: VesselTextFilter;
+    };
   }>;
 };
 
 type VesselOrderByWithRelationInput = {
   name?: SortOrder;
   imoNumber?: SortOrder;
-  vesselType?: SortOrder;
+  vesselType?: {
+    name: SortOrder;
+  };
   builtYear?: SortOrder;
   deadweight?: SortOrder;
   grossTonnage?: SortOrder;
@@ -63,6 +70,11 @@ type VesselShipbuilderDetails = {
   website: string | null;
 } | null;
 
+type VesselTypeDetails = {
+  id: string;
+  name: string;
+};
+
 type VesselEquipmentDetails = {
   id: string;
   manufacturerId: string | null;
@@ -79,11 +91,12 @@ export type VesselWithDetails = {
   id: string;
   name: string;
   imoNumber: string;
-  vesselType: string;
+  vesselTypeId: string;
+  vesselType: VesselTypeDetails;
   length: unknown;
   breadth: unknown;
-  depth: unknown | null;
-  draft: unknown | null;
+  depth: unknown;
+  draft: unknown;
   deadweight: number | null;
   grossTonnage: number | null;
   iceClass: string | null;
@@ -110,6 +123,12 @@ type VesselTransactionClient = Pick<
 >;
 
 const vesselWithDetailsInclude = {
+  vesselType: {
+    select: {
+      id: true,
+      name: true,
+    },
+  },
   classificationSociety: {
     select: {
       id: true,
@@ -276,6 +295,15 @@ export class VesselsRepository {
     return Boolean(entity);
   }
 
+  async vesselTypeExists(id: string): Promise<boolean> {
+    const entity = await this.prisma.vesselType.findUnique({
+      where: { id },
+      select: { id: true },
+    });
+
+    return Boolean(entity);
+  }
+
   async shipbuilderExists(id: string): Promise<boolean> {
     const entity = await this.prisma.shipbuilder.findUnique({
       where: { id },
@@ -329,9 +357,15 @@ export class VesselsRepository {
 
     if (query.vesselType) {
       where.vesselType = {
-        contains: query.vesselType,
-        mode: 'insensitive',
+        name: {
+          contains: query.vesselType,
+          mode: 'insensitive',
+        },
       };
+    }
+
+    if (query.vesselTypeId) {
+      where.vesselTypeId = query.vesselTypeId;
     }
 
     if (query.classificationSocietyId) {
@@ -376,8 +410,10 @@ export class VesselsRepository {
           },
           {
             vesselType: {
-              contains: search,
-              mode: 'insensitive',
+              name: {
+                contains: search,
+                mode: 'insensitive',
+              },
             },
           },
         ];
@@ -397,7 +433,7 @@ export class VesselsRepository {
       case VesselSortBy.IMO_NUMBER:
         return { imoNumber: sortOrder };
       case VesselSortBy.VESSEL_TYPE:
-        return { vesselType: sortOrder };
+        return { vesselType: { name: sortOrder } };
       case VesselSortBy.BUILT_YEAR:
         return { builtYear: sortOrder };
       case VesselSortBy.DEADWEIGHT:

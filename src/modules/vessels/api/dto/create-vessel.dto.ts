@@ -32,11 +32,9 @@ export class CreateVesselDto {
   @Matches(/^\d{7}$/)
   imoNumber: string;
 
-  @ApiProperty({ example: 'Bulk Carrier' })
-  @IsString()
-  @IsNotEmpty()
-  @MaxLength(60)
-  vesselType: string;
+  @ApiProperty({ format: 'uuid' })
+  @IsUUID()
+  vesselTypeId: string;
 
   @ApiProperty({ example: 180.5 })
   @Type(() => Number)

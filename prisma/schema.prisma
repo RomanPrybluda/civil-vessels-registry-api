@@ -45,11 +45,19 @@ model Shipbuilder {
   vessels Vessel[]
 }
 
+model VesselType {
+  id        String   @id @default(uuid()) @db.Uuid
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  vessels Vessel[]
+}
+
 model Vessel {
-  id         String  @id @default(uuid()) @db.Uuid
-  name       String
-  imoNumber  String  @unique
-  vesselType String
+  id        String @id @default(uuid()) @db.Uuid
+  name      String
+  imoNumber String @unique
 
   length  Decimal  @db.Decimal(10, 2)
   breadth Decimal  @db.Decimal(10, 2)
@@ -61,6 +69,8 @@ model Vessel {
   iceClass     String?
   builtYear    Int
 
+  vesselTypeId             String                 @db.Uuid
+  vesselType               VesselType             @relation(fields: [vesselTypeId], references: [id])
   classificationSocietyId String?                 @db.Uuid
   classificationSociety   ClassificationSociety? @relation(fields: [classificationSocietyId], references: [id])
   manufacturerId          String?                 @db.Uuid
@@ -75,7 +85,7 @@ model Vessel {
   updatedAt DateTime @updatedAt
 
   @@index([imoNumber])
-  @@index([vesselType])
+  @@index([vesselTypeId])
   @@index([builtYear])
   @@index([manufacturerId])
   @@index([shipbuilderId])

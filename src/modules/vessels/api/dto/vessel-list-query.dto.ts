@@ -69,6 +69,11 @@ export class VesselListQueryDto {
   @ApiPropertyOptional({ format: 'uuid' })
   @IsOptional()
   @IsUUID()
+  vesselTypeId?: string;
+
+  @ApiPropertyOptional({ format: 'uuid' })
+  @IsOptional()
+  @IsUUID()
   classificationSocietyId?: string;
 
   @ApiPropertyOptional({ format: 'uuid' })

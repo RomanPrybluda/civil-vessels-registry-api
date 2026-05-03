@@ -2,6 +2,14 @@
 
 ## 2026-05-03
 
+### Feature: Vessel types directory and vessel FK migration
+- Added `VesselType` model and migration to normalize vessel types into a dedicated table.
+- Migrated `Vessel` from string field `vesselType` to required FK `vesselTypeId`.
+- Added full CRUD module `vessel-types` (`/vessel-types` endpoints).
+- Updated vessels create/update flow to validate `vesselTypeId` existence.
+- Updated vessel list filtering/sorting/search to work through the linked vessel type entity.
+- Refreshed seed and docs to keep schema/API/seed consistency.
+
 ### Feature: Shipbuilders entity and vessel relation
 - Added `Shipbuilder` model and migration.
 - Added `shipbuilderId` relation field to `Vessel`.

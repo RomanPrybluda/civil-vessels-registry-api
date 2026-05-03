@@ -114,12 +114,17 @@ const vesselsData = [
   { name: 'Academy Star', imoNumber: '9301020', vesselType: 'Training Vessel', length: 118.0, breadth: 18.5, depth: 8.1, draft: 5.3, deadweight: 3900, grossTonnage: 5100, iceClass: null, builtYear: 2013, classificationSocietyShortName: 'BV', shipbuilderName: 'Hyundai Heavy Industries' },
 ];
 
+const vesselTypesData = [...new Set(vesselsData.map((item) => item.vesselType))].map(
+  (name) => ({ name }),
+);
+
 async function main() {
   await prisma.$transaction(async (tx) => {
     await tx.vesselMainEngine.deleteMany();
     await tx.vesselAuxiliaryEngine.deleteMany();
     await tx.vesselShaftGenerator.deleteMany();
     await tx.vessel.deleteMany();
+    await tx.vesselType.deleteMany();
     await tx.classificationSociety.deleteMany();
     await tx.manufacturer.deleteMany();
     await tx.shipbuilder.deleteMany();
@@ -137,6 +142,10 @@ async function main() {
     data: shipbuildersData,
   });
 
+  await prisma.vesselType.createMany({
+    data: vesselTypesData,
+  });
+
   const manufacturers = await prisma.manufacturer.findMany();
   const manufacturerByName = new Map(
     manufacturers.map((item) => [item.name, item]),
@@ -149,18 +158,27 @@ async function main() {
 
   const shipbuilders = await prisma.shipbuilder.findMany();
   const shipbuilderByName = new Map(shipbuilders.map((item) => [item.name, item]));
+  const vesselTypes = await prisma.vesselType.findMany();
+  const vesselTypeByName = new Map(vesselTypes.map((item) => [item.name, item]));
 
   for (const [index, vessel] of vesselsData.entries()) {
     const classSociety = classSocietyByShortName.get(
       vessel.classificationSocietyShortName,
     );
     const shipbuilder = shipbuilderByName.get(vessel.shipbuilderName);
+    const vesselType = vesselTypeByName.get(vessel.vesselType);
     const engineManufacturer = manufacturers[index % manufacturers.length];
     const auxManufacturer =
       manufacturers[(index + 1) % manufacturers.length] ??
       manufacturerByName.get('MAN Energy Solutions');
 
-    if (!classSociety || !shipbuilder || !engineManufacturer || !auxManufacturer) {
+    if (
+      !classSociety ||
+      !shipbuilder ||
+      !vesselType ||
+      !engineManufacturer ||
+      !auxManufacturer
+    ) {
       throw new Error('Seed reference integrity check failed');
     }
 
@@ -168,7 +186,7 @@ async function main() {
       data: {
         name: vessel.name,
         imoNumber: vessel.imoNumber,
-        vesselType: vessel.vesselType,
+        vesselTypeId: vesselType.id,
         length: vessel.length,
         breadth: vessel.breadth,
         depth: vessel.depth,
@@ -207,7 +225,7 @@ async function main() {
   }
 
   console.log(
-    `Seed completed: ${vesselsData.length} vessels, ${manufacturersData.length} manufacturers, ${shipbuildersData.length} shipbuilders.`,
+    `Seed completed: ${vesselsData.length} vessels, ${vesselTypesData.length} vessel types, ${manufacturersData.length} manufacturers, ${shipbuildersData.length} shipbuilders.`,
   );
 }
 

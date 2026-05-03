@@ -13,7 +13,7 @@ const UUID_PATTERN =
 export interface VesselModelProps {
   name: string;
   imoNumber: string;
-  vesselType: string;
+  vesselTypeId: string;
   length: number;
   breadth: number;
   depth?: number | null;
@@ -33,7 +33,7 @@ export interface VesselModelProps {
 export interface VesselBasePersistencePayload {
   name: string;
   imoNumber: string;
-  vesselType: string;
+  vesselTypeId: string;
   length: number;
   breadth: number;
   depth: number | null;
@@ -62,7 +62,7 @@ export class Vessel {
   private constructor(
     private readonly nameValue: string,
     private readonly imoNumberValue: ImoNumber,
-    private readonly vesselTypeValue: string,
+    private readonly vesselTypeIdValue: string,
     private readonly dimensionsValue: VesselDimensions,
     private readonly deadweightValue: number | null,
     private readonly grossTonnageValue: number | null,
@@ -82,9 +82,13 @@ export class Vessel {
       throw new Error('Vessel name is required');
     }
 
-    const vesselType = props.vesselType?.trim();
-    if (!vesselType) {
-      throw new Error('Vessel type is required');
+    const vesselTypeId = props.vesselTypeId?.trim();
+    if (!vesselTypeId) {
+      throw new Error('vesselTypeId is required');
+    }
+
+    if (!UUID_PATTERN.test(vesselTypeId)) {
+      throw new Error('vesselTypeId must be a valid UUID');
     }
 
     const builtYear = props.builtYear;
@@ -142,7 +146,7 @@ export class Vessel {
     return new Vessel(
       name,
       imoNumber,
-      vesselType,
+      vesselTypeId,
       dimensions,
       props.deadweight ?? null,
       props.grossTonnage ?? null,
@@ -166,7 +170,7 @@ export class Vessel {
       vessel: {
         name: this.nameValue,
         imoNumber: this.imoNumberValue.value,
-        vesselType: this.vesselTypeValue,
+        vesselTypeId: this.vesselTypeIdValue,
         length: dimensions.length,
         breadth: dimensions.breadth,
         depth: dimensions.depth ?? null,

@@ -7,16 +7,17 @@
 ## 1) Прикладная схема (`public`, Prisma)
 
 ### Справочники
+- `VesselType`: типы судов (`name` unique), связан с судами.
 - `Manufacturer`: производители (`name` unique), связан с судами и оборудованием.
 - `ClassificationSociety`: классификационные общества (`name` unique, `shortName` unique), связан с судами.
 - `Shipbuilder`: судостроители (`name` unique), связан с судами.
 
 ### Основная сущность
 - `Vessel`:
-  - идентификация: `id`, `name`, `imoNumber` (unique), `vesselType`, `builtYear`;
+  - идентификация: `id`, `name`, `imoNumber` (unique), `vesselTypeId`, `builtYear`;
   - параметры: `length`, `breadth`, `depth`, `draft`, `deadweight`, `grossTonnage`, `iceClass`;
-  - связи: `classificationSocietyId`, `manufacturerId`, `shipbuilderId`;
-  - индексы: `imoNumber`, `vesselType`, `builtYear`, `manufacturerId`, `shipbuilderId`.
+  - связи: `vesselTypeId`, `classificationSocietyId`, `manufacturerId`, `shipbuilderId`;
+  - индексы: `imoNumber`, `vesselTypeId`, `builtYear`, `manufacturerId`, `shipbuilderId`.
 
 ### Энергетическое оборудование
 - `VesselMainEngine`
@@ -31,6 +32,7 @@
 ### Упрощенная диаграмма связей (прикладная часть)
 
 ```text
+VesselType 1 --- N Vessel
 ClassificationSociety 1 --- N Vessel N --- 1 Manufacturer
                               |
                               N

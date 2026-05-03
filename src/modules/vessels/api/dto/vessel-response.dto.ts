@@ -13,6 +13,14 @@ class VesselClassificationSocietyResponseDto {
   shortName: string;
 }
 
+class VesselTypeReferenceResponseDto {
+  @ApiProperty({ format: 'uuid' })
+  id: string;
+
+  @ApiProperty()
+  name: string;
+}
+
 class VesselShipbuilderResponseDto {
   @ApiProperty({ format: 'uuid' })
   id: string;
@@ -83,8 +91,14 @@ export class VesselResponseDto {
   @ApiProperty()
   imoNumber: string;
 
+  @ApiProperty({ format: 'uuid' })
+  vesselTypeId: string;
+
   @ApiProperty()
   vesselType: string;
+
+  @ApiProperty({ type: VesselTypeReferenceResponseDto })
+  vesselTypeRef: VesselTypeReferenceResponseDto;
 
   @ApiProperty()
   length: number;
@@ -154,7 +168,12 @@ export class VesselResponseDto {
       id: entity.id,
       name: entity.name,
       imoNumber: entity.imoNumber,
-      vesselType: entity.vesselType,
+      vesselTypeId: entity.vesselTypeId,
+      vesselType: entity.vesselType.name,
+      vesselTypeRef: {
+        id: entity.vesselType.id,
+        name: entity.vesselType.name,
+      },
       length: Number(entity.length),
       breadth: Number(entity.breadth),
       depth: entity.depth === null ? null : Number(entity.depth),
