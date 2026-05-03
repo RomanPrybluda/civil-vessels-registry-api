@@ -1,19 +1,18 @@
 # Civil Vessels Registry API
 
 Backend API for a civil cargo vessels registry.  
-The project is built with NestJS + Prisma + PostgreSQL and provides CRUD operations for vessels, manufacturers, shipbuilders, and classification societies.
+The project is built with NestJS + Prisma + PostgreSQL and provides CRUD operations for vessels, vessel types, builders, and class societies.
 
 ## Production
 
 - API: https://civil-vessels-registry-api.vercel.app/
 - Swagger UI: https://civil-vessels-registry-api.vercel.app/api/docs/
-- Healthcheck: https://civil-vessels-registry-api.vercel.app/health
+- Healthcheck: https://civil-vessels-registry-api.vercel.app/api/health
 
 ## Key Features
 
 - Vessel registry with IMO number, type, tonnage, dimensions, and build year.
-- Reference directories for manufacturers and classification societies.
-- Reference directories for manufacturers, shipbuilders, and classification societies.
+- Reference directories for vessel types, builders, and class societies.
 - Search, filtering, sorting, and pagination for vessel lists.
 - JWT authentication and role-based authorization (`admin`, `manager`, `user`).
 - Input validation and Swagger API documentation.
@@ -21,22 +20,22 @@ The project is built with NestJS + Prisma + PostgreSQL and provides CRUD operati
 ## API Modules
 
 - `auth`:
-  - `POST /auth/login` - get JWT token
-  - `GET /auth/me` - get current authenticated user
+  - `POST /api/auth/login` - get JWT token
+  - `GET /api/auth/me` - get current authenticated user
 - `vessels`:
-  - `GET /vessels`, `GET /vessels/:id`, `GET /vessels/imo/:imoNumber`
-  - `POST /vessels`, `PUT /vessels/:id`, `DELETE /vessels/:id`
-- `manufacturers`:
-  - `GET /manufacturers`, `GET /manufacturers/:id`
-  - `POST /manufacturers`, `PUT /manufacturers/:id`, `DELETE /manufacturers/:id`
-- `shipbuilders`:
-  - `GET /shipbuilders`, `GET /shipbuilders/:id`
-  - `POST /shipbuilders`, `PUT /shipbuilders/:id`, `DELETE /shipbuilders/:id`
-- `classification-societies`:
-  - `GET /classification-societies`, `GET /classification-societies/:id`
-  - `POST /classification-societies`, `PUT /classification-societies/:id`, `DELETE /classification-societies/:id`
+  - `GET /api/vessels`, `GET /api/vessels/:id`, `GET /api/vessels/imo/:imoNumber`
+  - `POST /api/vessels`, `PUT /api/vessels/:id`, `DELETE /api/vessels/:id`
+- `vessel-types`:
+  - `GET /api/vessel-types`, `GET /api/vessel-types/:id`
+  - `POST /api/vessel-types`, `PUT /api/vessel-types/:id`, `DELETE /api/vessel-types/:id`
+- `builders`:
+  - `GET /api/builders`, `GET /api/builders/:id`
+  - `POST /api/builders`, `PUT /api/builders/:id`, `DELETE /api/builders/:id`
+- `class-societies`:
+  - `GET /api/class-societies`, `GET /api/class-societies/:id`
+  - `POST /api/class-societies`, `PUT /api/class-societies/:id`, `DELETE /api/class-societies/:id`
 - `health`:
-  - `GET /health`
+  - `GET /api/health`
 
 `GET` endpoints are public. Data modification endpoints (`POST/PUT/DELETE`) require a `Bearer` token with `admin` or `manager` role.
 

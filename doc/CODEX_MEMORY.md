@@ -41,3 +41,12 @@
   - `CreateClassificationSocietyDto`
 - Added explicit max lengths, numeric upper bounds, URL protocol requirement, and array size limits.
 - Kept Rich Model validation unchanged as a separate business-invariant layer.
+
+### Refactor: unified API route structure
+- Added global API prefix: all public endpoints now start with `/api`.
+- Updated route aliases for reference modules:
+  - `manufacturers` -> `/api/vessel-types`
+  - `shipbuilders` -> `/api/builders`
+  - `classification-societies` -> `/api/class-societies`
+- Kept auth endpoints under `/api/auth`.
+- Synchronized Swagger tags and `README.md` endpoint list with the new route structure.
