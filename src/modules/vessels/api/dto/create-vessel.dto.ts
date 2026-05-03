@@ -1,6 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
+  ArrayMaxSize,
   IsArray,
   IsInt,
   IsNotEmpty,
@@ -8,6 +9,7 @@ import {
   IsOptional,
   IsString,
   IsUUID,
+  MaxLength,
   Matches,
   Max,
   Min,
@@ -21,28 +23,33 @@ export class CreateVesselDto {
   @ApiProperty({ example: 'Black Sea Trader' })
   @IsString()
   @IsNotEmpty()
+  @MaxLength(100)
   name: string;
 
   @ApiProperty({ example: '9123456', description: 'Exactly 7 digits' })
   @IsString()
+  @IsNotEmpty()
   @Matches(/^\d{7}$/)
   imoNumber: string;
 
   @ApiProperty({ example: 'Bulk Carrier' })
   @IsString()
   @IsNotEmpty()
+  @MaxLength(60)
   vesselType: string;
 
   @ApiProperty({ example: 180.5 })
   @Type(() => Number)
   @IsNumber()
   @Min(0.01)
+  @Max(500)
   length: number;
 
   @ApiProperty({ example: 28.4 })
   @Type(() => Number)
   @IsNumber()
   @Min(0.01)
+  @Max(100)
   breadth: number;
 
   @ApiPropertyOptional({ example: 14.2 })
@@ -50,6 +57,7 @@ export class CreateVesselDto {
   @Type(() => Number)
   @IsNumber()
   @Min(0.01)
+  @Max(100)
   depth?: number;
 
   @ApiPropertyOptional({ example: 9.1 })
@@ -57,6 +65,7 @@ export class CreateVesselDto {
   @Type(() => Number)
   @IsNumber()
   @Min(0.01)
+  @Max(100)
   draft?: number;
 
   @ApiPropertyOptional({ example: 35000 })
@@ -64,6 +73,7 @@ export class CreateVesselDto {
   @Type(() => Number)
   @IsInt()
   @Min(0)
+  @Max(500000)
   deadweight?: number;
 
   @ApiPropertyOptional({ example: 22000 })
@@ -71,11 +81,13 @@ export class CreateVesselDto {
   @Type(() => Number)
   @IsInt()
   @Min(0)
+  @Max(500000)
   grossTonnage?: number;
 
   @ApiPropertyOptional({ example: '1C' })
   @IsOptional()
   @IsString()
+  @MaxLength(20)
   iceClass?: string;
 
   @ApiProperty({ example: 2015 })
@@ -103,6 +115,7 @@ export class CreateVesselDto {
   @ApiPropertyOptional({ type: VesselEquipmentInputDto, isArray: true })
   @IsOptional()
   @IsArray()
+  @ArrayMaxSize(20)
   @ValidateNested({ each: true })
   @Type(() => VesselEquipmentInputDto)
   mainEngines?: VesselEquipmentInputDto[];
@@ -110,6 +123,7 @@ export class CreateVesselDto {
   @ApiPropertyOptional({ type: VesselEquipmentInputDto, isArray: true })
   @IsOptional()
   @IsArray()
+  @ArrayMaxSize(20)
   @ValidateNested({ each: true })
   @Type(() => VesselEquipmentInputDto)
   auxiliaryEngines?: VesselEquipmentInputDto[];
@@ -117,6 +131,7 @@ export class CreateVesselDto {
   @ApiPropertyOptional({ type: VesselEquipmentInputDto, isArray: true })
   @IsOptional()
   @IsArray()
+  @ArrayMaxSize(20)
   @ValidateNested({ each: true })
   @Type(() => VesselEquipmentInputDto)
   shaftGenerators?: VesselEquipmentInputDto[];
