@@ -1,0 +1,57 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Manufacturer {
+  id        String   @id @default(uuid()) @db.Uuid
+  name      String   @unique
+  country   String?
+  website   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ClassificationSociety {
+  id        String   @id @default(uuid()) @db.Uuid
+  name      String   @unique
+  shortName String   @unique
+  country   String?
+  website   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  vessels Vessel[]
+}
+
+model Vessel {
+  id         String  @id @default(uuid()) @db.Uuid
+  name       String
+  imoNumber  String  @unique
+  vesselType String
+
+  length  Decimal  @db.Decimal(10, 2)
+  breadth Decimal  @db.Decimal(10, 2)
+  depth   Decimal? @db.Decimal(10, 2)
+  draft   Decimal? @db.Decimal(10, 2)
+
+  deadweight   Int?
+  grossTonnage Int?
+  iceClass     String?
+  builtYear    Int
+
+  classificationSocietyId String?                 @db.Uuid
+  classificationSociety   ClassificationSociety? @relation(fields: [classificationSocietyId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([imoNumber])
+  @@index([vesselType])
+  @@index([builtYear])
+}
