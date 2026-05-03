@@ -5,6 +5,7 @@ import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.setGlobalPrefix('api');
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -27,9 +28,9 @@ async function bootstrap() {
     .addTag('health')
     .addTag('auth')
     .addTag('vessels')
-    .addTag('manufacturers')
-    .addTag('shipbuilders')
-    .addTag('classification-societies')
+    .addTag('vessel-types')
+    .addTag('builders')
+    .addTag('class-societies')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
