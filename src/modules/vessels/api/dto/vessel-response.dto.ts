@@ -1,17 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { Prisma } from '@prisma/client';
-
-type VesselWithClassification = Prisma.VesselGetPayload<{
-  include: {
-    classificationSociety: {
-      select: {
-        id: true;
-        name: true;
-        shortName: true;
-      };
-    };
-  };
-}>;
+import { VesselWithDetails } from '../../infrastructure/vessels.repository';
 
 class VesselClassificationSocietyResponseDto {
   @ApiProperty({ format: 'uuid' })
@@ -22,6 +10,52 @@ class VesselClassificationSocietyResponseDto {
 
   @ApiProperty()
   shortName: string;
+}
+
+class VesselEquipmentManufacturerResponseDto {
+  @ApiProperty({ format: 'uuid' })
+  id: string;
+
+  @ApiProperty()
+  name: string;
+
+  @ApiPropertyOptional({ nullable: true })
+  country: string | null;
+
+  @ApiPropertyOptional({ nullable: true })
+  website: string | null;
+}
+
+class VesselEquipmentResponseDto {
+  @ApiProperty({ format: 'uuid' })
+  id: string;
+
+  @ApiPropertyOptional({ nullable: true, format: 'uuid' })
+  manufacturerId: string | null;
+
+  @ApiPropertyOptional({ nullable: true })
+  model: string | null;
+
+  @ApiProperty()
+  quantity: number;
+
+  @ApiProperty()
+  powerKw: number;
+
+  @ApiProperty()
+  totalPowerKw: number;
+
+  @ApiPropertyOptional({
+    type: VesselEquipmentManufacturerResponseDto,
+    nullable: true,
+  })
+  manufacturer: VesselEquipmentManufacturerResponseDto | null;
+
+  @ApiProperty({ format: 'date-time' })
+  createdAt: string;
+
+  @ApiProperty({ format: 'date-time' })
+  updatedAt: string;
 }
 
 export class VesselResponseDto {
@@ -64,8 +98,20 @@ export class VesselResponseDto {
   @ApiPropertyOptional({ nullable: true, format: 'uuid' })
   classificationSocietyId: string | null;
 
-  @ApiPropertyOptional({ type: VesselClassificationSocietyResponseDto, nullable: true })
+  @ApiPropertyOptional({
+    type: VesselClassificationSocietyResponseDto,
+    nullable: true,
+  })
   classificationSociety: VesselClassificationSocietyResponseDto | null;
+
+  @ApiProperty({ type: VesselEquipmentResponseDto, isArray: true })
+  mainEngines: VesselEquipmentResponseDto[];
+
+  @ApiProperty({ type: VesselEquipmentResponseDto, isArray: true })
+  auxiliaryEngines: VesselEquipmentResponseDto[];
+
+  @ApiProperty({ type: VesselEquipmentResponseDto, isArray: true })
+  shaftGenerators: VesselEquipmentResponseDto[];
 
   @ApiProperty({ format: 'date-time' })
   createdAt: string;
@@ -73,7 +119,7 @@ export class VesselResponseDto {
   @ApiProperty({ format: 'date-time' })
   updatedAt: string;
 
-  static fromEntity(entity: VesselWithClassification): VesselResponseDto {
+  static fromEntity(entity: VesselWithDetails): VesselResponseDto {
     return {
       id: entity.id,
       name: entity.name,
@@ -95,6 +141,60 @@ export class VesselResponseDto {
             shortName: entity.classificationSociety.shortName,
           }
         : null,
+      mainEngines: entity.mainEngines.map((item) => ({
+        id: item.id,
+        manufacturerId: item.manufacturerId,
+        model: item.model,
+        quantity: item.quantity,
+        powerKw: item.powerKw,
+        totalPowerKw: item.totalPowerKw,
+        manufacturer: item.manufacturer
+          ? {
+              id: item.manufacturer.id,
+              name: item.manufacturer.name,
+              country: item.manufacturer.country,
+              website: item.manufacturer.website,
+            }
+          : null,
+        createdAt: item.createdAt.toISOString(),
+        updatedAt: item.updatedAt.toISOString(),
+      })),
+      auxiliaryEngines: entity.auxiliaryEngines.map((item) => ({
+        id: item.id,
+        manufacturerId: item.manufacturerId,
+        model: item.model,
+        quantity: item.quantity,
+        powerKw: item.powerKw,
+        totalPowerKw: item.totalPowerKw,
+        manufacturer: item.manufacturer
+          ? {
+              id: item.manufacturer.id,
+              name: item.manufacturer.name,
+              country: item.manufacturer.country,
+              website: item.manufacturer.website,
+            }
+          : null,
+        createdAt: item.createdAt.toISOString(),
+        updatedAt: item.updatedAt.toISOString(),
+      })),
+      shaftGenerators: entity.shaftGenerators.map((item) => ({
+        id: item.id,
+        manufacturerId: item.manufacturerId,
+        model: item.model,
+        quantity: item.quantity,
+        powerKw: item.powerKw,
+        totalPowerKw: item.totalPowerKw,
+        manufacturer: item.manufacturer
+          ? {
+              id: item.manufacturer.id,
+              name: item.manufacturer.name,
+              country: item.manufacturer.country,
+              website: item.manufacturer.website,
+            }
+          : null,
+        createdAt: item.createdAt.toISOString(),
+        updatedAt: item.updatedAt.toISOString(),
+      })),
       createdAt: entity.createdAt.toISOString(),
       updatedAt: entity.updatedAt.toISOString(),
     };

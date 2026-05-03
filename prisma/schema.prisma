@@ -15,6 +15,10 @@ model Manufacturer {
   website   String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  mainEngineRecords      VesselMainEngine[]
+  auxiliaryEngineRecords VesselAuxiliaryEngine[]
+  shaftGeneratorRecords  VesselShaftGenerator[]
 }
 
 model ClassificationSociety {
@@ -47,6 +51,9 @@ model Vessel {
 
   classificationSocietyId String?                 @db.Uuid
   classificationSociety   ClassificationSociety? @relation(fields: [classificationSocietyId], references: [id])
+  mainEngines             VesselMainEngine[]
+  auxiliaryEngines        VesselAuxiliaryEngine[]
+  shaftGenerators         VesselShaftGenerator[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -54,4 +61,55 @@ model Vessel {
   @@index([imoNumber])
   @@index([vesselType])
   @@index([builtYear])
+}
+
+model VesselMainEngine {
+  id             String        @id @default(uuid()) @db.Uuid
+  vesselId       String        @db.Uuid
+  vessel         Vessel        @relation(fields: [vesselId], references: [id], onDelete: Cascade)
+  manufacturerId String?       @db.Uuid
+  manufacturer   Manufacturer? @relation(fields: [manufacturerId], references: [id], onDelete: SetNull)
+  model          String?
+  quantity       Int
+  powerKw        Int
+  totalPowerKw   Int
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@index([vesselId])
+  @@index([manufacturerId])
+}
+
+model VesselAuxiliaryEngine {
+  id             String        @id @default(uuid()) @db.Uuid
+  vesselId       String        @db.Uuid
+  vessel         Vessel        @relation(fields: [vesselId], references: [id], onDelete: Cascade)
+  manufacturerId String?       @db.Uuid
+  manufacturer   Manufacturer? @relation(fields: [manufacturerId], references: [id], onDelete: SetNull)
+  model          String?
+  quantity       Int
+  powerKw        Int
+  totalPowerKw   Int
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@index([vesselId])
+  @@index([manufacturerId])
+}
+
+model VesselShaftGenerator {
+  id             String        @id @default(uuid()) @db.Uuid
+  vesselId       String        @db.Uuid
+  vessel         Vessel        @relation(fields: [vesselId], references: [id], onDelete: Cascade)
+  manufacturerId String?       @db.Uuid
+  manufacturer   Manufacturer? @relation(fields: [manufacturerId], references: [id], onDelete: SetNull)
+  model          String?
+  quantity       Int
+  powerKw        Int
+  totalPowerKw   Int
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@index([vesselId])
+  @@index([manufacturerId])
 }

@@ -1,5 +1,11 @@
 import { ImoNumber } from './imo-number.value-object';
+import {
+  VesselEquipment,
+  VesselEquipmentPersistencePayload,
+  type VesselEquipmentProps,
+} from './vessel-equipment.value-object';
 import { VesselDimensions } from './vessel-dimensions.value-object';
+export type { VesselEquipmentProps } from './vessel-equipment.value-object';
 
 const UUID_PATTERN =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -17,9 +23,12 @@ export interface VesselModelProps {
   iceClass?: string | null;
   builtYear: number;
   classificationSocietyId?: string | null;
+  mainEngines?: VesselEquipmentProps[];
+  auxiliaryEngines?: VesselEquipmentProps[];
+  shaftGenerators?: VesselEquipmentProps[];
 }
 
-export interface VesselPersistencePayload {
+export interface VesselBasePersistencePayload {
   name: string;
   imoNumber: string;
   vesselType: string;
@@ -34,6 +43,17 @@ export interface VesselPersistencePayload {
   classificationSocietyId: string | null;
 }
 
+export interface VesselEquipmentCollectionsPersistencePayload {
+  mainEngines: VesselEquipmentPersistencePayload[];
+  auxiliaryEngines: VesselEquipmentPersistencePayload[];
+  shaftGenerators: VesselEquipmentPersistencePayload[];
+}
+
+export interface VesselPersistencePayload {
+  vessel: VesselBasePersistencePayload;
+  equipment: VesselEquipmentCollectionsPersistencePayload;
+}
+
 export class Vessel {
   private constructor(
     private readonly nameValue: string,
@@ -45,6 +65,9 @@ export class Vessel {
     private readonly iceClassValue: string | null,
     private readonly builtYearValue: number,
     private readonly classificationSocietyIdValue: string | null,
+    private readonly mainEnginesValue: VesselEquipment[],
+    private readonly auxiliaryEnginesValue: VesselEquipment[],
+    private readonly shaftGeneratorsValue: VesselEquipment[],
   ) {}
 
   static create(props: VesselModelProps): Vessel {
@@ -99,6 +122,9 @@ export class Vessel {
       props.iceClass?.trim() || null,
       builtYear,
       classificationSocietyId,
+      (props.mainEngines ?? []).map((item) => VesselEquipment.create(item)),
+      (props.auxiliaryEngines ?? []).map((item) => VesselEquipment.create(item)),
+      (props.shaftGenerators ?? []).map((item) => VesselEquipment.create(item)),
     );
   }
 
@@ -106,18 +132,29 @@ export class Vessel {
     const dimensions = this.dimensionsValue.toObject();
 
     return {
-      name: this.nameValue,
-      imoNumber: this.imoNumberValue.value,
-      vesselType: this.vesselTypeValue,
-      length: dimensions.length,
-      breadth: dimensions.breadth,
-      depth: dimensions.depth ?? null,
-      draft: dimensions.draft ?? null,
-      deadweight: this.deadweightValue,
-      grossTonnage: this.grossTonnageValue,
-      iceClass: this.iceClassValue,
-      builtYear: this.builtYearValue,
-      classificationSocietyId: this.classificationSocietyIdValue,
+      vessel: {
+        name: this.nameValue,
+        imoNumber: this.imoNumberValue.value,
+        vesselType: this.vesselTypeValue,
+        length: dimensions.length,
+        breadth: dimensions.breadth,
+        depth: dimensions.depth ?? null,
+        draft: dimensions.draft ?? null,
+        deadweight: this.deadweightValue,
+        grossTonnage: this.grossTonnageValue,
+        iceClass: this.iceClassValue,
+        builtYear: this.builtYearValue,
+        classificationSocietyId: this.classificationSocietyIdValue,
+      },
+      equipment: {
+        mainEngines: this.mainEnginesValue.map((item) => item.toPersistence()),
+        auxiliaryEngines: this.auxiliaryEnginesValue.map((item) =>
+          item.toPersistence(),
+        ),
+        shaftGenerators: this.shaftGeneratorsValue.map((item) =>
+          item.toPersistence(),
+        ),
+      },
     };
   }
 }
