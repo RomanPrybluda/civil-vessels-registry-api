@@ -1,7 +1,7 @@
 # Civil Vessels Registry API
 
 Backend API for a civil cargo vessels registry.  
-The project is built with NestJS + Prisma + PostgreSQL and provides CRUD operations for vessels, manufacturers, and classification societies.
+The project is built with NestJS + Prisma + PostgreSQL and provides CRUD operations for vessels, manufacturers, shipbuilders, and classification societies.
 
 ## Production
 
@@ -13,6 +13,7 @@ The project is built with NestJS + Prisma + PostgreSQL and provides CRUD operati
 
 - Vessel registry with IMO number, type, tonnage, dimensions, and build year.
 - Reference directories for manufacturers and classification societies.
+- Reference directories for manufacturers, shipbuilders, and classification societies.
 - Search, filtering, sorting, and pagination for vessel lists.
 - JWT authentication and role-based authorization (`admin`, `manager`, `user`).
 - Input validation and Swagger API documentation.
@@ -28,6 +29,9 @@ The project is built with NestJS + Prisma + PostgreSQL and provides CRUD operati
 - `manufacturers`:
   - `GET /manufacturers`, `GET /manufacturers/:id`
   - `POST /manufacturers`, `PUT /manufacturers/:id`, `DELETE /manufacturers/:id`
+- `shipbuilders`:
+  - `GET /shipbuilders`, `GET /shipbuilders/:id`
+  - `POST /shipbuilders`, `PUT /shipbuilders/:id`, `DELETE /shipbuilders/:id`
 - `classification-societies`:
   - `GET /classification-societies`, `GET /classification-societies/:id`
   - `POST /classification-societies`, `PUT /classification-societies/:id`, `DELETE /classification-societies/:id`
@@ -53,11 +57,11 @@ Required:
 - `DATABASE_URL`
 - `DIRECT_URL`
 - `JWT_SECRET`
+- `AUTH_USERS_JSON` (JSON array of users; mock defaults are removed)
 
 Optional:
 
 - `JWT_EXPIRES_IN` (default: `1h`)
-- `AUTH_USERS_JSON` (JSON array of local users)
 - `NODE_ENV=production`
 
 ## Tests and Useful Commands

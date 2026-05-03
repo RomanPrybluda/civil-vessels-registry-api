@@ -90,6 +90,11 @@ export class CreateVesselDto {
   @IsUUID()
   classificationSocietyId?: string;
 
+  @ApiPropertyOptional({ format: 'uuid' })
+  @IsOptional()
+  @IsUUID()
+  shipbuilderId?: string;
+
   @ApiPropertyOptional({ type: VesselEquipmentInputDto, isArray: true })
   @IsOptional()
   @IsArray()

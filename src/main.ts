@@ -28,6 +28,7 @@ async function bootstrap() {
     .addTag('auth')
     .addTag('vessels')
     .addTag('manufacturers')
+    .addTag('shipbuilders')
     .addTag('classification-societies')
     .build();
 

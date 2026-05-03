@@ -23,6 +23,7 @@ export interface VesselModelProps {
   iceClass?: string | null;
   builtYear: number;
   classificationSocietyId?: string | null;
+  shipbuilderId?: string | null;
   mainEngines?: VesselEquipmentProps[];
   auxiliaryEngines?: VesselEquipmentProps[];
   shaftGenerators?: VesselEquipmentProps[];
@@ -41,6 +42,7 @@ export interface VesselBasePersistencePayload {
   iceClass: string | null;
   builtYear: number;
   classificationSocietyId: string | null;
+  shipbuilderId: string | null;
 }
 
 export interface VesselEquipmentCollectionsPersistencePayload {
@@ -65,6 +67,7 @@ export class Vessel {
     private readonly iceClassValue: string | null,
     private readonly builtYearValue: number,
     private readonly classificationSocietyIdValue: string | null,
+    private readonly shipbuilderIdValue: string | null,
     private readonly mainEnginesValue: VesselEquipment[],
     private readonly auxiliaryEnginesValue: VesselEquipment[],
     private readonly shaftGeneratorsValue: VesselEquipment[],
@@ -104,6 +107,11 @@ export class Vessel {
       throw new Error('classificationSocietyId must be a valid UUID');
     }
 
+    const shipbuilderId = props.shipbuilderId ?? null;
+    if (shipbuilderId !== null && !UUID_PATTERN.test(shipbuilderId)) {
+      throw new Error('shipbuilderId must be a valid UUID');
+    }
+
     const imoNumber = ImoNumber.create(props.imoNumber);
     const dimensions = VesselDimensions.create({
       length: props.length,
@@ -122,6 +130,7 @@ export class Vessel {
       props.iceClass?.trim() || null,
       builtYear,
       classificationSocietyId,
+      shipbuilderId,
       (props.mainEngines ?? []).map((item) => VesselEquipment.create(item)),
       (props.auxiliaryEngines ?? []).map((item) => VesselEquipment.create(item)),
       (props.shaftGenerators ?? []).map((item) => VesselEquipment.create(item)),
@@ -145,6 +154,7 @@ export class Vessel {
         iceClass: this.iceClassValue,
         builtYear: this.builtYearValue,
         classificationSocietyId: this.classificationSocietyIdValue,
+        shipbuilderId: this.shipbuilderIdValue,
       },
       equipment: {
         mainEngines: this.mainEnginesValue.map((item) => item.toPersistence()),

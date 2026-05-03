@@ -14,27 +14,6 @@ interface LocalAuthUser {
   role: Role;
 }
 
-const DEFAULT_USERS: LocalAuthUser[] = [
-  {
-    id: 'admin-1',
-    username: 'admin',
-    password: 'admin123',
-    role: Role.ADMIN,
-  },
-  {
-    id: 'manager-1',
-    username: 'manager',
-    password: 'manager123',
-    role: Role.MANAGER,
-  },
-  {
-    id: 'user-1',
-    username: 'user',
-    password: 'user123',
-    role: Role.USER,
-  },
-];
-
 @Injectable()
 export class AuthService {
   private readonly users: LocalAuthUser[] = this.loadUsers();
@@ -83,7 +62,9 @@ export class AuthService {
   private loadUsers(): LocalAuthUser[] {
     const rawUsers = process.env.AUTH_USERS_JSON;
     if (!rawUsers) {
-      return DEFAULT_USERS;
+      throw new Error(
+        'AUTH_USERS_JSON is required. Mock local users have been removed.',
+      );
     }
 
     try {
@@ -129,11 +110,11 @@ export class AuthService {
         };
       });
     } catch (error: unknown) {
-      console.error(
-        'Invalid AUTH_USERS_JSON configuration. Falling back to default local users.',
-        error,
+      throw new Error(
+        `Invalid AUTH_USERS_JSON configuration: ${
+          error instanceof Error ? error.message : 'unknown error'
+        }`,
       );
-      return DEFAULT_USERS;
     }
   }
 }
