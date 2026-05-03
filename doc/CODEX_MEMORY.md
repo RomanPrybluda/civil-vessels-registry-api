@@ -61,3 +61,11 @@
 - Restricted vessel deletion to `admin` only.
 - Added regression test `src/modules/auth/authorization-matrix.spec.ts` to lock role metadata for protected controller methods.
 - Updated `README.md` with the new authorization matrix and `AUTH_USERS_JSON` example for all three roles.
+
+### Cleanup: remove legacy Hello World endpoint
+- Removed root `GET /api` Hello World endpoint by deleting:
+  - `src/app.controller.ts`
+  - `src/app.service.ts`
+  - `src/app.controller.spec.ts`
+- Updated e2e test to validate `GET /api/health` response shape instead of the removed root route.
+- Kept `GET /api/health` as the public liveness endpoint.
