@@ -33,6 +33,7 @@ async function bootstrap() {
 
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/docs', app, document, {
+    useGlobalPrefix: false,
     jsonDocumentUrl: 'api/docs-json',
   });
 
