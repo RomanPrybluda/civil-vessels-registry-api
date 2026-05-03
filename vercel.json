@@ -3,6 +3,13 @@
   "framework": null,
   "outputDirectory": ".",
   "buildCommand": "npm run build:vercel",
+  "redirects": [
+    {
+      "source": "/",
+      "destination": "/api/docs",
+      "permanent": false
+    }
+  ],
   "rewrites": [
     {
       "source": "/(.*)",
