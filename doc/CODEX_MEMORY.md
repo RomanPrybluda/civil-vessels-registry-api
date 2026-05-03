@@ -24,3 +24,10 @@
 ### Docs/Process
 - Added root `AGENTS.md`.
 - Established this memory file for future feature/bug entries.
+
+### Adjustment: direct vessel links
+- Added direct `Vessel.manufacturerId` relation to `Manufacturer`.
+- `Vessel` now has direct links to both:
+  - `Manufacturer` via `manufacturerId`
+  - `Shipbuilder` via `shipbuilderId`
+- Confirmed no standalone `builders` entity/module exists.

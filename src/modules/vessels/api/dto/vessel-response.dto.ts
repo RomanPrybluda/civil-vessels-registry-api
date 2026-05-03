@@ -120,6 +120,15 @@ export class VesselResponseDto {
   classificationSociety: VesselClassificationSocietyResponseDto | null;
 
   @ApiPropertyOptional({ nullable: true, format: 'uuid' })
+  manufacturerId: string | null;
+
+  @ApiPropertyOptional({
+    type: VesselEquipmentManufacturerResponseDto,
+    nullable: true,
+  })
+  manufacturer: VesselEquipmentManufacturerResponseDto | null;
+
+  @ApiPropertyOptional({ nullable: true, format: 'uuid' })
   shipbuilderId: string | null;
 
   @ApiPropertyOptional({ type: VesselShipbuilderResponseDto, nullable: true })
@@ -160,6 +169,15 @@ export class VesselResponseDto {
             id: entity.classificationSociety.id,
             name: entity.classificationSociety.name,
             shortName: entity.classificationSociety.shortName,
+          }
+        : null,
+      manufacturerId: entity.manufacturerId,
+      manufacturer: entity.manufacturer
+        ? {
+            id: entity.manufacturer.id,
+            name: entity.manufacturer.name,
+            country: entity.manufacturer.country,
+            website: entity.manufacturer.website,
           }
         : null,
       shipbuilderId: entity.shipbuilderId,
