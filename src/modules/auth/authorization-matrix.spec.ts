@@ -3,6 +3,7 @@ import { Role } from './domain/role.enum';
 import { ClassificationSocietiesController } from '../classification-societies/api/classification-societies.controller';
 import { ManufacturersController } from '../manufacturers/api/manufacturers.controller';
 import { ShipbuildersController } from '../shipbuilders/api/shipbuilders.controller';
+import { VesselTypesController } from '../vessel-types/api/vessel-types.controller';
 import { VesselsController } from '../vessels/api/vessels.controller';
 
 function getRoles(target: object, methodName: string): Role[] | undefined {
@@ -49,6 +50,18 @@ describe('Authorization role matrix', () => {
       Role.ADMIN,
     ]);
     expect(getRoles(ShipbuildersController.prototype, 'remove')).toEqual([
+      Role.ADMIN,
+    ]);
+  });
+
+  it('allows only admin to modify vessel types', () => {
+    expect(getRoles(VesselTypesController.prototype, 'create')).toEqual([
+      Role.ADMIN,
+    ]);
+    expect(getRoles(VesselTypesController.prototype, 'update')).toEqual([
+      Role.ADMIN,
+    ]);
+    expect(getRoles(VesselTypesController.prototype, 'remove')).toEqual([
       Role.ADMIN,
     ]);
   });

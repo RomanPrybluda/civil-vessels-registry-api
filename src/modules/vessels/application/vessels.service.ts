@@ -39,6 +39,7 @@ export class VesselsService {
   constructor(private readonly vesselsRepository: VesselsRepository) {}
 
   async create(dto: CreateVesselDto): Promise<VesselResponseDto> {
+    await this.ensureVesselTypeExists(dto.vesselTypeId);
     await this.ensureClassificationSocietyExists(dto.classificationSocietyId);
     await this.ensureVesselManufacturerExists(dto.manufacturerId);
     await this.ensureShipbuilderExists(dto.shipbuilderId);
@@ -129,6 +130,7 @@ export class VesselsService {
 
     const mergedProps = this.mergeVesselProps(existing, dto);
 
+    await this.ensureVesselTypeExists(mergedProps.vesselTypeId);
     await this.ensureClassificationSocietyExists(
       mergedProps.classificationSocietyId ?? undefined,
     );
@@ -188,6 +190,20 @@ export class VesselsService {
     if (!exists) {
       throw new BadRequestException(
         `Classification society with id ${classificationSocietyId} does not exist`,
+      );
+    }
+  }
+
+  private async ensureVesselTypeExists(vesselTypeId?: string): Promise<void> {
+    if (!vesselTypeId) {
+      return;
+    }
+
+    const exists = await this.vesselsRepository.vesselTypeExists(vesselTypeId);
+
+    if (!exists) {
+      throw new BadRequestException(
+        `Vessel type with id ${vesselTypeId} does not exist`,
       );
     }
   }
@@ -284,7 +300,7 @@ export class VesselsService {
     return {
       name: entity.name,
       imoNumber: entity.imoNumber,
-      vesselType: entity.vesselType,
+      vesselTypeId: entity.vesselTypeId,
       length: Number(entity.length),
       breadth: Number(entity.breadth),
       depth: entity.depth === null ? undefined : Number(entity.depth),

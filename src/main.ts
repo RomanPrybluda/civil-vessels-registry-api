@@ -30,6 +30,7 @@ async function bootstrap() {
     .addTag('vessels')
     .addTag('manufacturers')
     .addTag('shipbuilders')
+    .addTag('vessel-types')
     .addTag('class-societies')
     .build();
 
