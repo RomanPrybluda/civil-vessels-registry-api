@@ -3,7 +3,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { ClassificationSocietyResponseDto } from '../api/dto/classification-society-response.dto';
 import { CreateClassificationSocietyDto } from '../api/dto/create-classification-society.dto';
 import { UpdateClassificationSocietyDto } from '../api/dto/update-classification-society.dto';
@@ -21,7 +21,7 @@ export class ClassificationSocietiesService {
     try {
       const entity = await this.classificationSocietiesRepository.create(dto);
       return ClassificationSocietyResponseDto.fromEntity(entity);
-    } catch (error) {
+    } catch (error: unknown) {
       this.handleUniqueConstraintError(error);
       throw error;
     }
@@ -55,7 +55,7 @@ export class ClassificationSocietiesService {
     try {
       const entity = await this.classificationSocietiesRepository.update(id, dto);
       return ClassificationSocietyResponseDto.fromEntity(entity);
-    } catch (error) {
+    } catch (error: unknown) {
       this.handleUniqueConstraintError(error);
       throw error;
     }
@@ -80,7 +80,7 @@ export class ClassificationSocietiesService {
 
   private handleUniqueConstraintError(error: unknown): void {
     if (
-      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error instanceof PrismaClientKnownRequestError &&
       error.code === 'P2002'
     ) {
       const target = error.meta?.target;

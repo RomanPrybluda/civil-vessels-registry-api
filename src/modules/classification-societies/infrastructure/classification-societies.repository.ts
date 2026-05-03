@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { ClassificationSociety } from '@prisma/client';
 import { PrismaService } from '../../../database/prisma.service';
 import { CreateClassificationSocietyDto } from '../api/dto/create-classification-society.dto';
 import { UpdateClassificationSocietyDto } from '../api/dto/update-classification-society.dto';
@@ -10,7 +9,7 @@ export class ClassificationSocietiesRepository {
 
   create(
     dto: CreateClassificationSocietyDto,
-  ): Promise<ClassificationSociety> {
+  ) {
     return this.prisma.classificationSociety.create({
       data: {
         name: dto.name,
@@ -21,13 +20,13 @@ export class ClassificationSocietiesRepository {
     });
   }
 
-  findAll(): Promise<ClassificationSociety[]> {
+  findAll() {
     return this.prisma.classificationSociety.findMany({
       orderBy: { createdAt: 'desc' },
     });
   }
 
-  findById(id: string): Promise<ClassificationSociety | null> {
+  findById(id: string) {
     return this.prisma.classificationSociety.findUnique({
       where: { id },
     });
@@ -36,7 +35,7 @@ export class ClassificationSocietiesRepository {
   update(
     id: string,
     dto: UpdateClassificationSocietyDto,
-  ): Promise<ClassificationSociety> {
+  ) {
     return this.prisma.classificationSociety.update({
       where: { id },
       data: {
@@ -48,7 +47,7 @@ export class ClassificationSocietiesRepository {
     });
   }
 
-  delete(id: string): Promise<ClassificationSociety> {
+  delete(id: string) {
     return this.prisma.classificationSociety.delete({
       where: { id },
     });
