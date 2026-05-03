@@ -6,7 +6,7 @@ The project is built with NestJS + Prisma + PostgreSQL and provides CRUD operati
 ## Production
 
 - API: https://civil-vessels-registry-api.vercel.app/
-- Swagger UI: https://civil-vessels-registry-api.vercel.app/api/docs
+- Swagger UI: https://civil-vessels-registry-api.vercel.app/api/docs/
 - Healthcheck: https://civil-vessels-registry-api.vercel.app/health
 
 ## Key Features
