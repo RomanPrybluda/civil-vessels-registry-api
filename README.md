@@ -1,7 +1,7 @@
 # Civil Vessels Registry API
 
 Backend API for a civil cargo vessels registry.  
-The project is built with NestJS + Prisma + PostgreSQL and provides CRUD operations for vessels, vessel types, builders, and class societies.
+The project is built with NestJS + Prisma + PostgreSQL and provides CRUD operations for vessels, manufacturers, shipbuilders, and class societies.
 
 ## Production
 
@@ -12,7 +12,7 @@ The project is built with NestJS + Prisma + PostgreSQL and provides CRUD operati
 ## Key Features
 
 - Vessel registry with IMO number, type, tonnage, dimensions, and build year.
-- Reference directories for vessel types, builders, and class societies.
+- Reference directories for manufacturers, shipbuilders, and class societies.
 - Search, filtering, sorting, and pagination for vessel lists.
 - JWT authentication and role-based authorization (`admin`, `manager`, `user`).
 - Input validation and Swagger API documentation.
@@ -25,12 +25,12 @@ The project is built with NestJS + Prisma + PostgreSQL and provides CRUD operati
 - `vessels`:
   - `GET /api/vessels`, `GET /api/vessels/:id`, `GET /api/vessels/imo/:imoNumber`
   - `POST /api/vessels`, `PUT /api/vessels/:id`, `DELETE /api/vessels/:id`
-- `vessel-types`:
-  - `GET /api/vessel-types`, `GET /api/vessel-types/:id`
-  - `POST /api/vessel-types`, `PUT /api/vessel-types/:id`, `DELETE /api/vessel-types/:id`
-- `builders`:
-  - `GET /api/builders`, `GET /api/builders/:id`
-  - `POST /api/builders`, `PUT /api/builders/:id`, `DELETE /api/builders/:id`
+- `manufacturers`:
+  - `GET /api/manufacturers`, `GET /api/manufacturers/:id`
+  - `POST /api/manufacturers`, `PUT /api/manufacturers/:id`, `DELETE /api/manufacturers/:id`
+- `shipbuilders`:
+  - `GET /api/shipbuilders`, `GET /api/shipbuilders/:id`
+  - `POST /api/shipbuilders`, `PUT /api/shipbuilders/:id`, `DELETE /api/shipbuilders/:id`
 - `class-societies`:
   - `GET /api/class-societies`, `GET /api/class-societies/:id`
   - `POST /api/class-societies`, `PUT /api/class-societies/:id`, `DELETE /api/class-societies/:id`

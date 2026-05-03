@@ -45,8 +45,8 @@
 ### Refactor: unified API route structure
 - Added global API prefix: all public endpoints now start with `/api`.
 - Updated route aliases for reference modules:
-  - `manufacturers` -> `/api/vessel-types`
-  - `shipbuilders` -> `/api/builders`
+  - `manufacturers` -> `/api/manufacturers`
+  - `shipbuilders` -> `/api/shipbuilders`
   - `classification-societies` -> `/api/class-societies`
 - Kept auth endpoints under `/api/auth`.
 - Synchronized Swagger tags and `README.md` endpoint list with the new route structure.

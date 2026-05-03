@@ -28,8 +28,8 @@ async function bootstrap() {
     .addTag('health')
     .addTag('auth')
     .addTag('vessels')
-    .addTag('vessel-types')
-    .addTag('builders')
+    .addTag('manufacturers')
+    .addTag('shipbuilders')
     .addTag('class-societies')
     .build();
 
