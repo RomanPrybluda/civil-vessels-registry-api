@@ -4,7 +4,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { CreateVesselDto } from '../api/dto/create-vessel.dto';
 import { UpdateVesselDto } from '../api/dto/update-vessel.dto';
 import {
@@ -23,6 +23,8 @@ const DEFAULT_PAGE = 1;
 const DEFAULT_PAGE_SIZE = 20;
 const DEFAULT_SORT_BY = VesselSortBy.CREATED_AT;
 const DEFAULT_SORT_ORDER = SortOrder.DESC;
+type VesselPersistencePayload = ReturnType<Vessel['toPersistence']>;
+type VesselEquipmentPersistenceItem = VesselPersistencePayload['equipment']['mainEngines'][number];
 
 @Injectable()
 export class VesselsService {
@@ -39,7 +41,7 @@ export class VesselsService {
     try {
       const entity = await this.vesselsRepository.create(payload);
       return VesselResponseDto.fromEntity(entity);
-    } catch (error) {
+    } catch (error: unknown) {
       this.handlePrismaError(error);
       throw error;
     }
@@ -123,7 +125,7 @@ export class VesselsService {
     try {
       const entity = await this.vesselsRepository.update(id, payload);
       return VesselResponseDto.fromEntity(entity);
-    } catch (error) {
+    } catch (error: unknown) {
       this.handlePrismaError(error);
       throw error;
     }
@@ -143,7 +145,7 @@ export class VesselsService {
   private createDomainModel(props: VesselModelProps): Vessel {
     try {
       return Vessel.create(props);
-    } catch (error) {
+    } catch (error: unknown) {
       if (error instanceof Error) {
         throw new BadRequestException(error.message);
       }
@@ -171,7 +173,7 @@ export class VesselsService {
   }
 
   private async ensureManufacturersExist(
-    payload: ReturnType<Vessel['toPersistence']>,
+    payload: VesselPersistencePayload,
   ): Promise<void> {
     const ids = this.collectManufacturerIds(payload);
 
@@ -187,12 +189,18 @@ export class VesselsService {
   }
 
   private collectManufacturerIds(
-    payload: ReturnType<Vessel['toPersistence']>,
+    payload: VesselPersistencePayload,
   ): string[] {
     const ids = [
-      ...payload.equipment.mainEngines.map((item) => item.manufacturerId),
-      ...payload.equipment.auxiliaryEngines.map((item) => item.manufacturerId),
-      ...payload.equipment.shaftGenerators.map((item) => item.manufacturerId),
+      ...payload.equipment.mainEngines.map(
+        (item: VesselEquipmentPersistenceItem) => item.manufacturerId,
+      ),
+      ...payload.equipment.auxiliaryEngines.map(
+        (item: VesselEquipmentPersistenceItem) => item.manufacturerId,
+      ),
+      ...payload.equipment.shaftGenerators.map(
+        (item: VesselEquipmentPersistenceItem) => item.manufacturerId,
+      ),
     ];
 
     return ids.filter((id): id is string => Boolean(id));
@@ -236,9 +244,15 @@ export class VesselsService {
       iceClass: entity.iceClass ?? undefined,
       builtYear: entity.builtYear,
       classificationSocietyId: entity.classificationSocietyId ?? undefined,
-      mainEngines: entity.mainEngines.map((item) => this.mapEquipment(item)),
-      auxiliaryEngines: entity.auxiliaryEngines.map((item) => this.mapEquipment(item)),
-      shaftGenerators: entity.shaftGenerators.map((item) => this.mapEquipment(item)),
+      mainEngines: entity.mainEngines.map(
+        (item: VesselWithDetails['mainEngines'][number]) => this.mapEquipment(item),
+      ),
+      auxiliaryEngines: entity.auxiliaryEngines.map(
+        (item: VesselWithDetails['auxiliaryEngines'][number]) => this.mapEquipment(item),
+      ),
+      shaftGenerators: entity.shaftGenerators.map(
+        (item: VesselWithDetails['shaftGenerators'][number]) => this.mapEquipment(item),
+      ),
     };
   }
 
@@ -258,14 +272,14 @@ export class VesselsService {
 
   private handlePrismaError(error: unknown): void {
     if (
-      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error instanceof PrismaClientKnownRequestError &&
       error.code === 'P2002'
     ) {
       throw new ConflictException('Vessel with the same IMO number already exists');
     }
 
     if (
-      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error instanceof PrismaClientKnownRequestError &&
       error.code === 'P2003'
     ) {
       throw new BadRequestException('Invalid foreign key reference in vessel payload');

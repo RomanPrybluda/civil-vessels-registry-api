@@ -1,5 +1,13 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { Manufacturer } from '@prisma/client';
+
+type ManufacturerEntity = {
+  id: string;
+  name: string;
+  country: string | null;
+  website: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+};
 
 export class ManufacturerResponseDto {
   @ApiProperty({ format: 'uuid' })
@@ -20,7 +28,7 @@ export class ManufacturerResponseDto {
   @ApiProperty({ format: 'date-time' })
   updatedAt: string;
 
-  static fromEntity(entity: Manufacturer): ManufacturerResponseDto {
+  static fromEntity(entity: ManufacturerEntity): ManufacturerResponseDto {
     return {
       id: entity.id,
       name: entity.name,

@@ -1,5 +1,14 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { ClassificationSociety } from '@prisma/client';
+
+type ClassificationSocietyEntity = {
+  id: string;
+  name: string;
+  shortName: string;
+  country: string | null;
+  website: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+};
 
 export class ClassificationSocietyResponseDto {
   @ApiProperty({ format: 'uuid' })
@@ -24,7 +33,7 @@ export class ClassificationSocietyResponseDto {
   updatedAt: string;
 
   static fromEntity(
-    entity: ClassificationSociety,
+    entity: ClassificationSocietyEntity,
   ): ClassificationSocietyResponseDto {
     return {
       id: entity.id,

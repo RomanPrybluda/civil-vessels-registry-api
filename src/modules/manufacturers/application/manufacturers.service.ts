@@ -3,7 +3,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { CreateManufacturerDto } from '../api/dto/create-manufacturer.dto';
 import { ManufacturerResponseDto } from '../api/dto/manufacturer-response.dto';
 import { UpdateManufacturerDto } from '../api/dto/update-manufacturer.dto';
@@ -17,7 +17,7 @@ export class ManufacturersService {
     try {
       const entity = await this.manufacturersRepository.create(dto);
       return ManufacturerResponseDto.fromEntity(entity);
-    } catch (error) {
+    } catch (error: unknown) {
       this.handleUniqueConstraintError(error);
       throw error;
     }
@@ -47,7 +47,7 @@ export class ManufacturersService {
     try {
       const entity = await this.manufacturersRepository.update(id, dto);
       return ManufacturerResponseDto.fromEntity(entity);
-    } catch (error) {
+    } catch (error: unknown) {
       this.handleUniqueConstraintError(error);
       throw error;
     }
@@ -70,7 +70,7 @@ export class ManufacturersService {
 
   private handleUniqueConstraintError(error: unknown): void {
     if (
-      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error instanceof PrismaClientKnownRequestError &&
       error.code === 'P2002'
     ) {
       throw new ConflictException(
