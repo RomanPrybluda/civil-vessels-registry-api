@@ -34,7 +34,12 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/docs', app, document, {
     useGlobalPrefix: false,
-    jsonDocumentUrl: 'api/docs-json',
+    jsonDocumentUrl: '/api/docs-json',
+    customCssUrl: 'https://unpkg.com/swagger-ui-dist@5/swagger-ui.css',
+    customJs: [
+      'https://unpkg.com/swagger-ui-dist@5/swagger-ui-bundle.js',
+      'https://unpkg.com/swagger-ui-dist@5/swagger-ui-standalone-preset.js',
+    ],
   });
 
   await app.listen(process.env.PORT ?? 3000);
