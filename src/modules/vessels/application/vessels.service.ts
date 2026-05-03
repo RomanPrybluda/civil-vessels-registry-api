@@ -9,11 +9,8 @@ import { CreateVesselDto } from '../api/dto/create-vessel.dto';
 import { UpdateVesselDto } from '../api/dto/update-vessel.dto';
 import { VesselListQueryDto } from '../api/dto/vessel-list-query.dto';
 import { VesselResponseDto } from '../api/dto/vessel-response.dto';
-import { Vessel, VesselModelProps } from '../domain/vessel.model';
-import {
-  VesselWithClassification,
-  VesselsRepository,
-} from '../infrastructure/vessels.repository';
+import { Vessel, VesselEquipmentProps, VesselModelProps } from '../domain/vessel.model';
+import { VesselWithDetails, VesselsRepository } from '../infrastructure/vessels.repository';
 
 @Injectable()
 export class VesselsService {
@@ -23,9 +20,12 @@ export class VesselsService {
     await this.ensureClassificationSocietyExists(dto.classificationSocietyId);
 
     const model = this.createDomainModel(dto);
+    const payload = model.toPersistence();
+
+    await this.ensureManufacturersExist(payload);
 
     try {
-      const entity = await this.vesselsRepository.create(model.toPersistence());
+      const entity = await this.vesselsRepository.create(payload);
       return VesselResponseDto.fromEntity(entity);
     } catch (error) {
       this.handlePrismaError(error);
@@ -73,21 +73,17 @@ export class VesselsService {
       throw new NotFoundException(`Vessel with id ${id} not found`);
     }
 
-    const classificationSocietyId =
-      dto.classificationSocietyId !== undefined
-        ? dto.classificationSocietyId
-        : existing.classificationSocietyId ?? undefined;
+    const mergedProps = this.mergeVesselProps(existing, dto);
 
-    await this.ensureClassificationSocietyExists(classificationSocietyId);
+    await this.ensureClassificationSocietyExists(mergedProps.classificationSocietyId ?? undefined);
 
-    const model = this.createDomainModel({
-      ...this.mapEntityToModelProps(existing),
-      ...dto,
-      classificationSocietyId,
-    });
+    const model = this.createDomainModel(mergedProps);
+    const payload = model.toPersistence();
+
+    await this.ensureManufacturersExist(payload);
 
     try {
-      const entity = await this.vesselsRepository.update(id, model.toPersistence());
+      const entity = await this.vesselsRepository.update(id, payload);
       return VesselResponseDto.fromEntity(entity);
     } catch (error) {
       this.handlePrismaError(error);
@@ -136,7 +132,59 @@ export class VesselsService {
     }
   }
 
-  private mapEntityToModelProps(entity: VesselWithClassification): VesselModelProps {
+  private async ensureManufacturersExist(
+    payload: ReturnType<Vessel['toPersistence']>,
+  ): Promise<void> {
+    const ids = this.collectManufacturerIds(payload);
+
+    if (ids.length === 0) {
+      return;
+    }
+
+    const allExist = await this.vesselsRepository.manufacturersExist(ids);
+
+    if (!allExist) {
+      throw new BadRequestException('One or more manufacturerId values do not exist');
+    }
+  }
+
+  private collectManufacturerIds(
+    payload: ReturnType<Vessel['toPersistence']>,
+  ): string[] {
+    const ids = [
+      ...payload.equipment.mainEngines.map((item) => item.manufacturerId),
+      ...payload.equipment.auxiliaryEngines.map((item) => item.manufacturerId),
+      ...payload.equipment.shaftGenerators.map((item) => item.manufacturerId),
+    ];
+
+    return ids.filter((id): id is string => Boolean(id));
+  }
+
+  private mergeVesselProps(
+    entity: VesselWithDetails,
+    dto: UpdateVesselDto,
+  ): VesselModelProps {
+    const base = this.mapEntityToModelProps(entity);
+
+    return {
+      ...base,
+      ...dto,
+      mainEngines:
+        dto.mainEngines !== undefined
+          ? dto.mainEngines
+          : base.mainEngines,
+      auxiliaryEngines:
+        dto.auxiliaryEngines !== undefined
+          ? dto.auxiliaryEngines
+          : base.auxiliaryEngines,
+      shaftGenerators:
+        dto.shaftGenerators !== undefined
+          ? dto.shaftGenerators
+          : base.shaftGenerators,
+    };
+  }
+
+  private mapEntityToModelProps(entity: VesselWithDetails): VesselModelProps {
     return {
       name: entity.name,
       imoNumber: entity.imoNumber,
@@ -150,6 +198,23 @@ export class VesselsService {
       iceClass: entity.iceClass ?? undefined,
       builtYear: entity.builtYear,
       classificationSocietyId: entity.classificationSocietyId ?? undefined,
+      mainEngines: entity.mainEngines.map((item) => this.mapEquipment(item)),
+      auxiliaryEngines: entity.auxiliaryEngines.map((item) => this.mapEquipment(item)),
+      shaftGenerators: entity.shaftGenerators.map((item) => this.mapEquipment(item)),
+    };
+  }
+
+  private mapEquipment(item: {
+    manufacturerId: string | null;
+    model: string | null;
+    quantity: number;
+    powerKw: number;
+  }): VesselEquipmentProps {
+    return {
+      manufacturerId: item.manufacturerId,
+      model: item.model,
+      quantity: item.quantity,
+      powerKw: item.powerKw,
     };
   }
 
@@ -165,7 +230,7 @@ export class VesselsService {
       error instanceof Prisma.PrismaClientKnownRequestError &&
       error.code === 'P2003'
     ) {
-      throw new BadRequestException('Invalid classificationSocietyId');
+      throw new BadRequestException('Invalid foreign key reference in vessel payload');
     }
   }
 }

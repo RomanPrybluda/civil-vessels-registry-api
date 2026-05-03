@@ -1,6 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
+  IsArray,
   IsInt,
   IsNotEmpty,
   IsNumber,
@@ -10,7 +11,9 @@ import {
   Matches,
   Max,
   Min,
+  ValidateNested,
 } from 'class-validator';
+import { VesselEquipmentInputDto } from './vessel-equipment-input.dto';
 
 const CURRENT_YEAR = new Date().getFullYear();
 
@@ -86,4 +89,25 @@ export class CreateVesselDto {
   @IsOptional()
   @IsUUID()
   classificationSocietyId?: string;
+
+  @ApiPropertyOptional({ type: VesselEquipmentInputDto, isArray: true })
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => VesselEquipmentInputDto)
+  mainEngines?: VesselEquipmentInputDto[];
+
+  @ApiPropertyOptional({ type: VesselEquipmentInputDto, isArray: true })
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => VesselEquipmentInputDto)
+  auxiliaryEngines?: VesselEquipmentInputDto[];
+
+  @ApiPropertyOptional({ type: VesselEquipmentInputDto, isArray: true })
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => VesselEquipmentInputDto)
+  shaftGenerators?: VesselEquipmentInputDto[];
 }
