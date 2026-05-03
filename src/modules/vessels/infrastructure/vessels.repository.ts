@@ -20,6 +20,7 @@ type VesselWhereInput = {
   imoNumber?: { contains: string };
   vesselType?: VesselTextFilter;
   classificationSocietyId?: string;
+  shipbuilderId?: string;
   builtYear?: {
     gte?: number;
     lte?: number;
@@ -54,6 +55,13 @@ type VesselManufacturerDetails = {
   website: string | null;
 } | null;
 
+type VesselShipbuilderDetails = {
+  id: string;
+  name: string;
+  country: string | null;
+  website: string | null;
+} | null;
+
 type VesselEquipmentDetails = {
   id: string;
   manufacturerId: string | null;
@@ -81,6 +89,8 @@ export type VesselWithDetails = {
   builtYear: number;
   classificationSocietyId: string | null;
   classificationSociety: VesselClassificationSocietyDetails;
+  shipbuilderId: string | null;
+  shipbuilder: VesselShipbuilderDetails;
   mainEngines: VesselEquipmentDetails[];
   auxiliaryEngines: VesselEquipmentDetails[];
   shaftGenerators: VesselEquipmentDetails[];
@@ -99,6 +109,14 @@ const vesselWithDetailsInclude = {
       id: true,
       name: true,
       shortName: true,
+    },
+  },
+  shipbuilder: {
+    select: {
+      id: true,
+      name: true,
+      country: true,
+      website: true,
     },
   },
   mainEngines: {
@@ -241,6 +259,15 @@ export class VesselsRepository {
     return Boolean(entity);
   }
 
+  async shipbuilderExists(id: string): Promise<boolean> {
+    const entity = await this.prisma.shipbuilder.findUnique({
+      where: { id },
+      select: { id: true },
+    });
+
+    return Boolean(entity);
+  }
+
   async manufacturersExist(ids: string[]): Promise<boolean> {
     if (ids.length === 0) {
       return true;
@@ -283,6 +310,10 @@ export class VesselsRepository {
 
     if (query.classificationSocietyId) {
       where.classificationSocietyId = query.classificationSocietyId;
+    }
+
+    if (query.shipbuilderId) {
+      where.shipbuilderId = query.shipbuilderId;
     }
 
     if (query.builtYearFrom !== undefined || query.builtYearTo !== undefined) {

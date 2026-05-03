@@ -6,6 +6,7 @@ import { HealthController } from './health.controller';
 import { AuthModule } from './modules/auth/auth.module';
 import { ClassificationSocietiesModule } from './modules/classification-societies/classification-societies.module';
 import { ManufacturersModule } from './modules/manufacturers/manufacturers.module';
+import { ShipbuildersModule } from './modules/shipbuilders/shipbuilders.module';
 import { VesselsModule } from './modules/vessels/vessels.module';
 
 @Module({
@@ -14,6 +15,7 @@ import { VesselsModule } from './modules/vessels/vessels.module';
     AuthModule,
     ClassificationSocietiesModule,
     ManufacturersModule,
+    ShipbuildersModule,
     VesselsModule,
   ],
   controllers: [AppController, HealthController],
