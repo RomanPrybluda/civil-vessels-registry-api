@@ -4,8 +4,20 @@ import request from 'supertest';
 import { App } from 'supertest/types';
 import { AppModule } from './../src/app.module';
 
-describe('AppController (e2e)', () => {
+describe('HealthController (e2e)', () => {
   let app: INestApplication<App>;
+  const previousAuthUsers = process.env.AUTH_USERS_JSON;
+
+  beforeAll(() => {
+    process.env.AUTH_USERS_JSON = JSON.stringify([
+      {
+        id: 'e2e-user-1',
+        username: 'e2e-user',
+        password: 'e2e-password',
+        role: 'user',
+      },
+    ]);
+  });
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -17,14 +29,28 @@ describe('AppController (e2e)', () => {
     await app.init();
   });
 
-  it('/api (GET)', () => {
+  it('/api/health (GET)', () => {
     return request(app.getHttpServer())
-      .get('/api')
+      .get('/api/health')
       .expect(200)
-      .expect('Hello World!');
+      .expect((response) => {
+        expect(response.body.status).toBe('ok');
+        expect(typeof response.body.timestamp).toBe('string');
+      });
   });
 
   afterEach(async () => {
-    await app.close();
+    if (app) {
+      await app.close();
+    }
+  });
+
+  afterAll(() => {
+    if (previousAuthUsers === undefined) {
+      delete process.env.AUTH_USERS_JSON;
+      return;
+    }
+
+    process.env.AUTH_USERS_JSON = previousAuthUsers;
   });
 });
