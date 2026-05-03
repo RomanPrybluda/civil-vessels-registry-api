@@ -38,6 +38,7 @@ async function bootstrap() {
   SwaggerModule.setup('api/docs', app, document, {
     useGlobalPrefix: false,
     jsonDocumentUrl: '/api/docs-json',
+    customSiteTitle: 'CVR API',
     customCssUrl: 'https://unpkg.com/swagger-ui-dist@5/swagger-ui.css',
     customJs: [
       'https://unpkg.com/swagger-ui-dist@5/swagger-ui-bundle.js',
