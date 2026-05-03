@@ -70,6 +70,38 @@ $ mau deploy
 
 With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
 
+## Deploy to Vercel
+
+### 1. Connect GitHub repository
+
+1. Push the `feature/vercel-deployment` branch to GitHub.
+2. In Vercel dashboard, click `Add New...` -> `Project`.
+3. Import repository `civil-vessels-registry-api`.
+4. Framework preset: `Other`.
+5. Root directory: repository root.
+6. Build command: `npm run build`.
+7. Install command: `npm install`.
+
+Vercel uses `api/index.ts` as the serverless entrypoint and `vercel.json` rewrites all routes to this function.
+
+### 2. Required environment variables
+
+Set these in `Vercel -> Project -> Settings -> Environment Variables`:
+
+- `DATABASE_URL`
+- `DIRECT_URL`
+- `NODE_ENV=production` (recommended)
+
+Do not commit `.env` to Git.
+
+### 3. Production verification URLs
+
+After deployment, verify:
+
+- `https://<your-vercel-domain>/health`
+- `https://<your-vercel-domain>/api/docs`
+- `https://<your-vercel-domain>/vessels`
+
 ## Resources
 
 Check out a few resources that may come in handy when working with NestJS:
