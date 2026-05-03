@@ -35,7 +35,7 @@ The project is built with NestJS + Prisma + PostgreSQL and provides CRUD operati
   - `GET /api/class-societies`, `GET /api/class-societies/:id`
   - `POST /api/class-societies`, `PUT /api/class-societies/:id`, `DELETE /api/class-societies/:id`
 - `health`:
-  - `GET /api/health`
+  - `GET /api/health` (liveness + database connectivity check; returns `503` if DB is down)
 
 `GET` endpoints are public.
 Write permissions:
