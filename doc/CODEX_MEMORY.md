@@ -69,3 +69,12 @@
   - `src/app.controller.spec.ts`
 - Updated e2e test to validate `GET /api/health` response shape instead of the removed root route.
 - Kept `GET /api/health` as the public liveness endpoint.
+
+### Feature: production-ready healthcheck with DB dependency
+- Updated `GET /api/health` to include an actual database ping (`SELECT 1`) through Prisma.
+- Health response now includes dependency checks (`checks.database`).
+- Endpoint returns `200` with `database: up` when DB is reachable.
+- Endpoint returns `503 Service Unavailable` with `database: down` when DB is unreachable.
+- Updated e2e coverage for both healthy and degraded DB states.
+- Updated `README.md` health module description to document the DB-aware behavior.
+
