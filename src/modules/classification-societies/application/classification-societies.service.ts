@@ -31,9 +31,10 @@ export class ClassificationSocietiesService {
     const entities = await this.classificationSocietiesRepository.findAll();
     return entities.map(
       (
-        entity: Parameters<typeof ClassificationSocietyResponseDto.fromEntity>[0],
-      ) =>
-        ClassificationSocietyResponseDto.fromEntity(entity),
+        entity: Parameters<
+          typeof ClassificationSocietyResponseDto.fromEntity
+        >[0],
+      ) => ClassificationSocietyResponseDto.fromEntity(entity),
     );
   }
 
@@ -56,7 +57,10 @@ export class ClassificationSocietiesService {
     await this.ensureExists(id);
 
     try {
-      const entity = await this.classificationSocietiesRepository.update(id, dto);
+      const entity = await this.classificationSocietiesRepository.update(
+        id,
+        dto,
+      );
       return ClassificationSocietyResponseDto.fromEntity(entity);
     } catch (error: unknown) {
       this.handleUniqueConstraintError(error);
