@@ -29,8 +29,8 @@ import { CreateShipbuilderDto } from './dto/create-shipbuilder.dto';
 import { ShipbuilderResponseDto } from './dto/shipbuilder-response.dto';
 import { UpdateShipbuilderDto } from './dto/update-shipbuilder.dto';
 
-@ApiTags('builders')
-@Controller('builders')
+@ApiTags('shipbuilders')
+@Controller('shipbuilders')
 export class ShipbuildersController {
   constructor(private readonly shipbuildersService: ShipbuildersService) {}
 
