@@ -36,7 +36,7 @@ export class ManufacturersController {
 
   @Post()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ADMIN, Role.MANAGER)
+  @Roles(Role.ADMIN)
   @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Create manufacturer' })
   @ApiCreatedResponse({ type: ManufacturerResponseDto })
@@ -66,7 +66,7 @@ export class ManufacturersController {
 
   @Put(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ADMIN, Role.MANAGER)
+  @Roles(Role.ADMIN)
   @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Update manufacturer by id' })
   @ApiOkResponse({ type: ManufacturerResponseDto })
@@ -83,7 +83,7 @@ export class ManufacturersController {
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ADMIN, Role.MANAGER)
+  @Roles(Role.ADMIN)
   @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Delete manufacturer by id' })
   @ApiOkResponse({ type: ManufacturerResponseDto })
