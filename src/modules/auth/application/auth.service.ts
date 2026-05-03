@@ -1,4 +1,8 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  ServiceUnavailableException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { LoginDto } from '../api/dto/login.dto';
 import { LoginResponseDto } from '../api/dto/login-response.dto';
@@ -16,12 +20,23 @@ interface LocalAuthUser {
 
 @Injectable()
 export class AuthService {
-  private readonly users: LocalAuthUser[] = this.loadUsers();
+  private users: LocalAuthUser[] | null = null;
 
   constructor(private readonly jwtService: JwtService) {}
 
   async login(dto: LoginDto): Promise<LoginResponseDto> {
-    const user = this.users.find(
+    let users: LocalAuthUser[];
+    try {
+      users = this.getUsers();
+    } catch (error: unknown) {
+      throw new ServiceUnavailableException(
+        error instanceof Error
+          ? error.message
+          : 'Auth service is not configured',
+      );
+    }
+
+    const user = users.find(
       (candidate) =>
         candidate.username === dto.username &&
         candidate.password === dto.password,
@@ -57,6 +72,14 @@ export class AuthService {
       username: user.username,
       role: user.role,
     };
+  }
+
+  private getUsers(): LocalAuthUser[] {
+    if (!this.users) {
+      this.users = this.loadUsers();
+    }
+
+    return this.users;
   }
 
   private loadUsers(): LocalAuthUser[] {
