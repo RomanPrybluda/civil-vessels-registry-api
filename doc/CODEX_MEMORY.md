@@ -78,3 +78,20 @@
 - Updated e2e coverage for both healthy and degraded DB states.
 - Updated `README.md` health module description to document the DB-aware behavior.
 
+### Docs: internal knowledge base in `docs/`
+- Added new folder `docs/` with navigation and operational project docs:
+  - `docs/INDEX.md`
+  - `docs/DB_SCHEMA.md`
+  - `docs/MODULES_AND_FEATURES.md`
+  - `docs/PROJECT_ERRORS.md`
+- Documented:
+  - Current Prisma DB schema and relationships.
+  - API modules/features and role access model.
+  - Historical project mistakes and rules to avoid repeating them.
+
+### Docs: DB schema sync with actual auth contour
+- Updated `docs/DB_SCHEMA.md` to reflect two-layer structure:
+  - Application (`public`) schema from Prisma.
+  - Auth infrastructure schema (Supabase/Auth tables).
+- Added grouped auth table catalog and responsibility boundary between API-owned and infra-managed schema.
+
