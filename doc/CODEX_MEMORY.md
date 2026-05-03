@@ -95,3 +95,12 @@
   - Auth infrastructure schema (Supabase/Auth tables).
 - Added grouped auth table catalog and responsibility boundary between API-owned and infra-managed schema.
 
+### Bugfix: Vercel bootstrap stability without auth env
+- Fixed global app crash when `AUTH_USERS_JSON` is absent:
+  - auth users are now loaded lazily on login request instead of module bootstrap.
+  - app can boot and serve public/read endpoints even if auth env is missing in a preview deployment.
+- `POST /api/auth/login` now returns `503 Service Unavailable` for missing/invalid auth runtime configuration instead of crashing the whole server.
+- Added regression tests in `src/modules/auth/application/auth.service.spec.ts`.
+- Fixed production runtime script paths:
+  - `start` and `start:prod` now run `node dist/src/main.js`.
+
