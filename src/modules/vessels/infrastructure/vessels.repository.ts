@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
 import { PrismaService } from '../../../database/prisma.service';
 import {
   SortOrder,
@@ -10,6 +9,89 @@ import {
   VesselEquipmentCollectionsPersistencePayload,
   VesselPersistencePayload,
 } from '../domain/vessel.model';
+
+type VesselTextFilter = {
+  contains: string;
+  mode?: 'insensitive';
+};
+
+type VesselWhereInput = {
+  name?: VesselTextFilter;
+  imoNumber?: { contains: string };
+  vesselType?: VesselTextFilter;
+  classificationSocietyId?: string;
+  builtYear?: {
+    gte?: number;
+    lte?: number;
+  };
+  OR?: Array<{
+    name?: VesselTextFilter;
+    imoNumber?: { contains: string };
+    vesselType?: VesselTextFilter;
+  }>;
+};
+
+type VesselOrderByWithRelationInput = {
+  name?: SortOrder;
+  imoNumber?: SortOrder;
+  vesselType?: SortOrder;
+  builtYear?: SortOrder;
+  deadweight?: SortOrder;
+  grossTonnage?: SortOrder;
+  createdAt?: SortOrder;
+};
+
+type VesselClassificationSocietyDetails = {
+  id: string;
+  name: string;
+  shortName: string;
+} | null;
+
+type VesselManufacturerDetails = {
+  id: string;
+  name: string;
+  country: string | null;
+  website: string | null;
+} | null;
+
+type VesselEquipmentDetails = {
+  id: string;
+  manufacturerId: string | null;
+  model: string | null;
+  quantity: number;
+  powerKw: number;
+  totalPowerKw: number;
+  manufacturer: VesselManufacturerDetails;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export type VesselWithDetails = {
+  id: string;
+  name: string;
+  imoNumber: string;
+  vesselType: string;
+  length: unknown;
+  breadth: unknown;
+  depth: unknown | null;
+  draft: unknown | null;
+  deadweight: number | null;
+  grossTonnage: number | null;
+  iceClass: string | null;
+  builtYear: number;
+  classificationSocietyId: string | null;
+  classificationSociety: VesselClassificationSocietyDetails;
+  mainEngines: VesselEquipmentDetails[];
+  auxiliaryEngines: VesselEquipmentDetails[];
+  shaftGenerators: VesselEquipmentDetails[];
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+type VesselTransactionClient = Pick<
+  PrismaService,
+  'vessel' | 'vesselMainEngine' | 'vesselAuxiliaryEngine' | 'vesselShaftGenerator'
+>;
 
 const vesselWithDetailsInclude = {
   classificationSociety: {
@@ -30,7 +112,7 @@ const vesselWithDetailsInclude = {
         },
       },
     },
-    orderBy: { createdAt: 'asc' },
+    orderBy: { createdAt: 'asc' as const },
   },
   auxiliaryEngines: {
     include: {
@@ -43,7 +125,7 @@ const vesselWithDetailsInclude = {
         },
       },
     },
-    orderBy: { createdAt: 'asc' },
+    orderBy: { createdAt: 'asc' as const },
   },
   shaftGenerators: {
     include: {
@@ -56,13 +138,9 @@ const vesselWithDetailsInclude = {
         },
       },
     },
-    orderBy: { createdAt: 'asc' },
+    orderBy: { createdAt: 'asc' as const },
   },
-} satisfies Prisma.VesselInclude;
-
-export type VesselWithDetails = Prisma.VesselGetPayload<{
-  include: typeof vesselWithDetailsInclude;
-}>;
+};
 
 export interface VesselListOptions {
   query: VesselListQueryDto;
@@ -115,7 +193,7 @@ export class VesselsRepository {
   }
 
   create(payload: VesselPersistencePayload): Promise<VesselWithDetails> {
-    return this.prisma.$transaction(async (tx) => {
+    return this.prisma.$transaction(async (tx: VesselTransactionClient) => {
       const vessel = await tx.vessel.create({
         data: payload.vessel,
         select: { id: true },
@@ -131,7 +209,7 @@ export class VesselsRepository {
   }
 
   update(id: string, payload: VesselPersistencePayload): Promise<VesselWithDetails> {
-    return this.prisma.$transaction(async (tx) => {
+    return this.prisma.$transaction(async (tx: VesselTransactionClient) => {
       await tx.vessel.update({
         where: { id },
         data: payload.vessel,
@@ -180,8 +258,8 @@ export class VesselsRepository {
     return count === uniqueIds.length;
   }
 
-  private buildWhere(query: VesselListQueryDto): Prisma.VesselWhereInput {
-    const where: Prisma.VesselWhereInput = {};
+  private buildWhere(query: VesselListQueryDto): VesselWhereInput {
+    const where: VesselWhereInput = {};
 
     if (query.name) {
       where.name = {
@@ -251,7 +329,7 @@ export class VesselsRepository {
   private buildOrderBy(
     sortBy: VesselSortBy,
     sortOrder: SortOrder,
-  ): Prisma.VesselOrderByWithRelationInput {
+  ): VesselOrderByWithRelationInput {
     switch (sortBy) {
       case VesselSortBy.NAME:
         return { name: sortOrder };
@@ -272,7 +350,7 @@ export class VesselsRepository {
   }
 
   private async deleteEquipmentCollections(
-    tx: Prisma.TransactionClient,
+    tx: VesselTransactionClient,
     vesselId: string,
   ): Promise<void> {
     await tx.vesselMainEngine.deleteMany({ where: { vesselId } });
@@ -281,7 +359,7 @@ export class VesselsRepository {
   }
 
   private async createEquipmentCollections(
-    tx: Prisma.TransactionClient,
+    tx: VesselTransactionClient,
     vesselId: string,
     equipment: VesselEquipmentCollectionsPersistencePayload,
   ): Promise<void> {

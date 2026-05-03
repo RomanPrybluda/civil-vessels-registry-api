@@ -142,7 +142,8 @@ export class VesselResponseDto {
             shortName: entity.classificationSociety.shortName,
           }
         : null,
-      mainEngines: entity.mainEngines.map((item) => ({
+      mainEngines: entity.mainEngines.map(
+        (item: VesselWithDetails['mainEngines'][number]) => ({
         id: item.id,
         manufacturerId: item.manufacturerId,
         model: item.model,
@@ -159,8 +160,10 @@ export class VesselResponseDto {
           : null,
         createdAt: item.createdAt.toISOString(),
         updatedAt: item.updatedAt.toISOString(),
-      })),
-      auxiliaryEngines: entity.auxiliaryEngines.map((item) => ({
+      }),
+      ),
+      auxiliaryEngines: entity.auxiliaryEngines.map(
+        (item: VesselWithDetails['auxiliaryEngines'][number]) => ({
         id: item.id,
         manufacturerId: item.manufacturerId,
         model: item.model,
@@ -177,8 +180,10 @@ export class VesselResponseDto {
           : null,
         createdAt: item.createdAt.toISOString(),
         updatedAt: item.updatedAt.toISOString(),
-      })),
-      shaftGenerators: entity.shaftGenerators.map((item) => ({
+      }),
+      ),
+      shaftGenerators: entity.shaftGenerators.map(
+        (item: VesselWithDetails['shaftGenerators'][number]) => ({
         id: item.id,
         manufacturerId: item.manufacturerId,
         model: item.model,
@@ -195,7 +200,8 @@ export class VesselResponseDto {
           : null,
         createdAt: item.createdAt.toISOString(),
         updatedAt: item.updatedAt.toISOString(),
-      })),
+      }),
+      ),
       createdAt: entity.createdAt.toISOString(),
       updatedAt: entity.updatedAt.toISOString(),
     };

@@ -29,8 +29,11 @@ export class ClassificationSocietiesService {
 
   async findAll(): Promise<ClassificationSocietyResponseDto[]> {
     const entities = await this.classificationSocietiesRepository.findAll();
-    return entities.map((entity) =>
-      ClassificationSocietyResponseDto.fromEntity(entity),
+    return entities.map(
+      (
+        entity: Parameters<typeof ClassificationSocietyResponseDto.fromEntity>[0],
+      ) =>
+        ClassificationSocietyResponseDto.fromEntity(entity),
     );
   }
 

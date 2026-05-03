@@ -25,7 +25,10 @@ export class ManufacturersService {
 
   async findAll(): Promise<ManufacturerResponseDto[]> {
     const entities = await this.manufacturersRepository.findAll();
-    return entities.map((entity) => ManufacturerResponseDto.fromEntity(entity));
+    return entities.map(
+      (entity: Parameters<typeof ManufacturerResponseDto.fromEntity>[0]) =>
+        ManufacturerResponseDto.fromEntity(entity),
+    );
   }
 
   async findOne(id: string): Promise<ManufacturerResponseDto> {
