@@ -38,7 +38,7 @@ export class ClassificationSocietiesController {
 
   @Post()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ADMIN, Role.MANAGER)
+  @Roles(Role.ADMIN)
   @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Create classification society' })
   @ApiCreatedResponse({ type: ClassificationSocietyResponseDto })
@@ -72,7 +72,7 @@ export class ClassificationSocietiesController {
 
   @Put(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ADMIN, Role.MANAGER)
+  @Roles(Role.ADMIN)
   @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Update classification society by id' })
   @ApiOkResponse({ type: ClassificationSocietyResponseDto })
@@ -91,7 +91,7 @@ export class ClassificationSocietiesController {
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ADMIN, Role.MANAGER)
+  @Roles(Role.ADMIN)
   @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Delete classification society by id' })
   @ApiOkResponse({ type: ClassificationSocietyResponseDto })

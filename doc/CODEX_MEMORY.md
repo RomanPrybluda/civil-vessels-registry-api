@@ -50,3 +50,14 @@
   - `classification-societies` -> `/api/class-societies`
 - Kept auth endpoints under `/api/auth`.
 - Synchronized Swagger tags and `README.md` endpoint list with the new route structure.
+
+### Feature: role matrix hardening for admin/manager/user
+- Finalized supported roles to `admin`, `manager`, and `user`.
+- Access policy updated:
+  - `user`: read-only (public `GET` endpoints).
+  - `manager`: create/update vessels only.
+  - `admin`: full write access across all modules.
+- Restricted write access on reference directories (`manufacturers`, `shipbuilders`, `class-societies`) to `admin` only.
+- Restricted vessel deletion to `admin` only.
+- Added regression test `src/modules/auth/authorization-matrix.spec.ts` to lock role metadata for protected controller methods.
+- Updated `README.md` with the new authorization matrix and `AUTH_USERS_JSON` example for all three roles.

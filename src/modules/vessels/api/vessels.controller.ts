@@ -100,7 +100,7 @@ export class VesselsController {
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ADMIN, Role.MANAGER)
+  @Roles(Role.ADMIN)
   @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Delete vessel by id' })
   @ApiOkResponse({ type: VesselResponseDto })

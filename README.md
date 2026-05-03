@@ -37,7 +37,11 @@ The project is built with NestJS + Prisma + PostgreSQL and provides CRUD operati
 - `health`:
   - `GET /api/health`
 
-`GET` endpoints are public. Data modification endpoints (`POST/PUT/DELETE`) require a `Bearer` token with `admin` or `manager` role.
+`GET` endpoints are public.
+Write permissions:
+- `user`: read-only access (`GET` endpoints).
+- `manager`: can create and update vessels (`POST/PUT /api/vessels`).
+- `admin`: full access to all write endpoints, including delete and reference directories.
 
 ## Local Run
 
@@ -57,6 +61,16 @@ Required:
 - `DIRECT_URL`
 - `JWT_SECRET`
 - `AUTH_USERS_JSON` (JSON array of users; mock defaults are removed)
+
+Example:
+
+```json
+[
+  { "id": "admin-1", "username": "admin", "password": "admin-pass", "role": "admin" },
+  { "id": "manager-1", "username": "manager", "password": "manager-pass", "role": "manager" },
+  { "id": "user-1", "username": "user", "password": "user-pass", "role": "user" }
+]
+```
 
 Optional:
 

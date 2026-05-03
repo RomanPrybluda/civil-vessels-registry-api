@@ -36,7 +36,7 @@ export class ShipbuildersController {
 
   @Post()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ADMIN, Role.MANAGER)
+  @Roles(Role.ADMIN)
   @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Create shipbuilder' })
   @ApiCreatedResponse({ type: ShipbuilderResponseDto })
@@ -66,7 +66,7 @@ export class ShipbuildersController {
 
   @Put(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ADMIN, Role.MANAGER)
+  @Roles(Role.ADMIN)
   @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Update shipbuilder by id' })
   @ApiOkResponse({ type: ShipbuilderResponseDto })
@@ -83,7 +83,7 @@ export class ShipbuildersController {
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ADMIN, Role.MANAGER)
+  @Roles(Role.ADMIN)
   @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Delete shipbuilder by id' })
   @ApiOkResponse({ type: ShipbuilderResponseDto })
