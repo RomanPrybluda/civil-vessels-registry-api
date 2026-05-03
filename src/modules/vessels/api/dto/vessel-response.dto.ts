@@ -191,63 +191,63 @@ export class VesselResponseDto {
         : null,
       mainEngines: entity.mainEngines.map(
         (item: VesselWithDetails['mainEngines'][number]) => ({
-        id: item.id,
-        manufacturerId: item.manufacturerId,
-        model: item.model,
-        quantity: item.quantity,
-        powerKw: item.powerKw,
-        totalPowerKw: item.totalPowerKw,
-        manufacturer: item.manufacturer
-          ? {
-              id: item.manufacturer.id,
-              name: item.manufacturer.name,
-              country: item.manufacturer.country,
-              website: item.manufacturer.website,
-            }
-          : null,
-        createdAt: item.createdAt.toISOString(),
-        updatedAt: item.updatedAt.toISOString(),
-      }),
+          id: item.id,
+          manufacturerId: item.manufacturerId,
+          model: item.model,
+          quantity: item.quantity,
+          powerKw: item.powerKw,
+          totalPowerKw: item.totalPowerKw,
+          manufacturer: item.manufacturer
+            ? {
+                id: item.manufacturer.id,
+                name: item.manufacturer.name,
+                country: item.manufacturer.country,
+                website: item.manufacturer.website,
+              }
+            : null,
+          createdAt: item.createdAt.toISOString(),
+          updatedAt: item.updatedAt.toISOString(),
+        }),
       ),
       auxiliaryEngines: entity.auxiliaryEngines.map(
         (item: VesselWithDetails['auxiliaryEngines'][number]) => ({
-        id: item.id,
-        manufacturerId: item.manufacturerId,
-        model: item.model,
-        quantity: item.quantity,
-        powerKw: item.powerKw,
-        totalPowerKw: item.totalPowerKw,
-        manufacturer: item.manufacturer
-          ? {
-              id: item.manufacturer.id,
-              name: item.manufacturer.name,
-              country: item.manufacturer.country,
-              website: item.manufacturer.website,
-            }
-          : null,
-        createdAt: item.createdAt.toISOString(),
-        updatedAt: item.updatedAt.toISOString(),
-      }),
+          id: item.id,
+          manufacturerId: item.manufacturerId,
+          model: item.model,
+          quantity: item.quantity,
+          powerKw: item.powerKw,
+          totalPowerKw: item.totalPowerKw,
+          manufacturer: item.manufacturer
+            ? {
+                id: item.manufacturer.id,
+                name: item.manufacturer.name,
+                country: item.manufacturer.country,
+                website: item.manufacturer.website,
+              }
+            : null,
+          createdAt: item.createdAt.toISOString(),
+          updatedAt: item.updatedAt.toISOString(),
+        }),
       ),
       shaftGenerators: entity.shaftGenerators.map(
         (item: VesselWithDetails['shaftGenerators'][number]) => ({
-        id: item.id,
-        manufacturerId: item.manufacturerId,
-        model: item.model,
-        quantity: item.quantity,
-        powerKw: item.powerKw,
-        totalPowerKw: item.totalPowerKw,
-        manufacturer: item.manufacturer
-          ? {
-              id: item.manufacturer.id,
-              name: item.manufacturer.name,
-              country: item.manufacturer.country,
-              website: item.manufacturer.website,
-            }
-          : null,
-        createdAt: item.createdAt.toISOString(),
-        updatedAt: item.updatedAt.toISOString(),
-      }),
+          id: item.id,
+          manufacturerId: item.manufacturerId,
+          model: item.model,
+          quantity: item.quantity,
+          powerKw: item.powerKw,
+          totalPowerKw: item.totalPowerKw,
+          manufacturer: item.manufacturer
+            ? {
+                id: item.manufacturer.id,
+                name: item.manufacturer.name,
+                country: item.manufacturer.country,
+                website: item.manufacturer.website,
+              }
+            : null,
+          createdAt: item.createdAt.toISOString(),
+          updatedAt: item.updatedAt.toISOString(),
+        }),
       ),
       createdAt: entity.createdAt.toISOString(),
       updatedAt: entity.updatedAt.toISOString(),

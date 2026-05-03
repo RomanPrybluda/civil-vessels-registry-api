@@ -31,3 +31,13 @@
   - `Manufacturer` via `manufacturerId`
   - `Shipbuilder` via `shipbuilderId`
 - Confirmed no standalone `builders` entity/module exists.
+
+### Validation: DTO hardening for entity creation
+- Strengthened `class-validator` rules in create DTOs:
+  - `CreateVesselDto`
+  - `VesselEquipmentInputDto`
+  - `CreateManufacturerDto`
+  - `CreateShipbuilderDto`
+  - `CreateClassificationSocietyDto`
+- Added explicit max lengths, numeric upper bounds, URL protocol requirement, and array size limits.
+- Kept Rich Model validation unchanged as a separate business-invariant layer.

@@ -7,9 +7,7 @@ import { UpdateClassificationSocietyDto } from '../api/dto/update-classification
 export class ClassificationSocietiesRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  create(
-    dto: CreateClassificationSocietyDto,
-  ) {
+  create(dto: CreateClassificationSocietyDto) {
     return this.prisma.classificationSociety.create({
       data: {
         name: dto.name,
@@ -32,10 +30,7 @@ export class ClassificationSocietiesRepository {
     });
   }
 
-  update(
-    id: string,
-    dto: UpdateClassificationSocietyDto,
-  ) {
+  update(id: string, dto: UpdateClassificationSocietyDto) {
     return this.prisma.classificationSociety.update({
       where: { id },
       data: {

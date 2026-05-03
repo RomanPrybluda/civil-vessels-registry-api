@@ -103,7 +103,10 @@ export type VesselWithDetails = {
 
 type VesselTransactionClient = Pick<
   PrismaService,
-  'vessel' | 'vesselMainEngine' | 'vesselAuxiliaryEngine' | 'vesselShaftGenerator'
+  | 'vessel'
+  | 'vesselMainEngine'
+  | 'vesselAuxiliaryEngine'
+  | 'vesselShaftGenerator'
 >;
 
 const vesselWithDetailsInclude = {
@@ -237,7 +240,10 @@ export class VesselsRepository {
     });
   }
 
-  update(id: string, payload: VesselPersistencePayload): Promise<VesselWithDetails> {
+  update(
+    id: string,
+    payload: VesselPersistencePayload,
+  ): Promise<VesselWithDetails> {
     return this.prisma.$transaction(async (tx: VesselTransactionClient) => {
       await tx.vessel.update({
         where: { id },

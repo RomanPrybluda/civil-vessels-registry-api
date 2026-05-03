@@ -11,7 +11,9 @@ import { ShipbuildersRepository } from '../infrastructure/shipbuilders.repositor
 
 @Injectable()
 export class ShipbuildersService {
-  constructor(private readonly shipbuildersRepository: ShipbuildersRepository) {}
+  constructor(
+    private readonly shipbuildersRepository: ShipbuildersRepository,
+  ) {}
 
   async create(dto: CreateShipbuilderDto): Promise<ShipbuilderResponseDto> {
     try {

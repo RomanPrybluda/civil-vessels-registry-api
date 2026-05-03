@@ -1,6 +1,14 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsInt, IsOptional, IsString, IsUUID, Min } from 'class-validator';
+import {
+  IsInt,
+  IsOptional,
+  IsString,
+  IsUUID,
+  Max,
+  MaxLength,
+  Min,
+} from 'class-validator';
 
 export class VesselEquipmentInputDto {
   @ApiPropertyOptional({ format: 'uuid', nullable: true })
@@ -11,17 +19,20 @@ export class VesselEquipmentInputDto {
   @ApiPropertyOptional({ nullable: true, example: '6S50ME-C' })
   @IsOptional()
   @IsString()
+  @MaxLength(100)
   model?: string | null;
 
   @ApiProperty({ example: 1, minimum: 0 })
   @Type(() => Number)
   @IsInt()
   @Min(0)
+  @Max(1000)
   quantity: number;
 
   @ApiProperty({ example: 8200, minimum: 0 })
   @Type(() => Number)
   @IsInt()
   @Min(0)
+  @Max(100000)
   powerKw: number;
 }

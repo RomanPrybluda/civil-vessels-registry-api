@@ -89,11 +89,19 @@ export class Vessel {
 
     const builtYear = props.builtYear;
     const currentYear = new Date().getFullYear();
-    if (!Number.isInteger(builtYear) || builtYear < 1900 || builtYear > currentYear) {
+    if (
+      !Number.isInteger(builtYear) ||
+      builtYear < 1900 ||
+      builtYear > currentYear
+    ) {
       throw new Error(`Built year must be between 1900 and ${currentYear}`);
     }
 
-    if (props.deadweight !== undefined && props.deadweight !== null && props.deadweight < 0) {
+    if (
+      props.deadweight !== undefined &&
+      props.deadweight !== null &&
+      props.deadweight < 0
+    ) {
       throw new Error('Deadweight must be greater than or equal to 0');
     }
 
@@ -106,7 +114,10 @@ export class Vessel {
     }
 
     const classificationSocietyId = props.classificationSocietyId ?? null;
-    if (classificationSocietyId !== null && !UUID_PATTERN.test(classificationSocietyId)) {
+    if (
+      classificationSocietyId !== null &&
+      !UUID_PATTERN.test(classificationSocietyId)
+    ) {
       throw new Error('classificationSocietyId must be a valid UUID');
     }
 
@@ -141,7 +152,9 @@ export class Vessel {
       manufacturerId,
       shipbuilderId,
       (props.mainEngines ?? []).map((item) => VesselEquipment.create(item)),
-      (props.auxiliaryEngines ?? []).map((item) => VesselEquipment.create(item)),
+      (props.auxiliaryEngines ?? []).map((item) =>
+        VesselEquipment.create(item),
+      ),
       (props.shaftGenerators ?? []).map((item) => VesselEquipment.create(item)),
     );
   }

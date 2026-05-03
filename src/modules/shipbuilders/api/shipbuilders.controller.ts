@@ -58,7 +58,9 @@ export class ShipbuildersController {
   @ApiOperation({ summary: 'Get shipbuilder by id' })
   @ApiOkResponse({ type: ShipbuilderResponseDto })
   @ApiNotFoundResponse({ description: 'Shipbuilder not found' })
-  findOne(@Param('id', ParseUUIDPipe) id: string): Promise<ShipbuilderResponseDto> {
+  findOne(
+    @Param('id', ParseUUIDPipe) id: string,
+  ): Promise<ShipbuilderResponseDto> {
     return this.shipbuildersService.findOne(id);
   }
 
@@ -88,7 +90,9 @@ export class ShipbuildersController {
   @ApiNotFoundResponse({ description: 'Shipbuilder not found' })
   @ApiUnauthorizedResponse({ description: 'Missing or invalid token' })
   @ApiForbiddenResponse({ description: 'Role is not allowed to modify data' })
-  remove(@Param('id', ParseUUIDPipe) id: string): Promise<ShipbuilderResponseDto> {
+  remove(
+    @Param('id', ParseUUIDPipe) id: string,
+  ): Promise<ShipbuilderResponseDto> {
     return this.shipbuildersService.remove(id);
   }
 }

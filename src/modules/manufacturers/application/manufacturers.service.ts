@@ -11,7 +11,9 @@ import { ManufacturersRepository } from '../infrastructure/manufacturers.reposit
 
 @Injectable()
 export class ManufacturersService {
-  constructor(private readonly manufacturersRepository: ManufacturersRepository) {}
+  constructor(
+    private readonly manufacturersRepository: ManufacturersRepository,
+  ) {}
 
   async create(dto: CreateManufacturerDto): Promise<ManufacturerResponseDto> {
     try {
