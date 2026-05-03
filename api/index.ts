@@ -43,10 +43,8 @@ async function bootstrap() {
         .build();
 
       const document = SwaggerModule.createDocument(app, config);
-      server.get('/api/docs', (_req, res) => {
-        res.redirect(308, '/api/docs/');
-      });
       SwaggerModule.setup('api/docs', app, document, {
+        useGlobalPrefix: false,
         jsonDocumentUrl: 'api/docs-json',
       });
 
