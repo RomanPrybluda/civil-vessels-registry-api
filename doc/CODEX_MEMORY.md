@@ -2,6 +2,9 @@
 
 ## 2026-05-03
 
+### UI: Swagger tab title shortened
+- Replaced default browser tab title `Swagger UI` with short resource name `CVR API` using `customSiteTitle` in Swagger setup.
+
 ### Feature: Vessel types directory and vessel FK migration
 - Added `VesselType` model and migration to normalize vessel types into a dedicated table.
 - Migrated `Vessel` from string field `vesselType` to required FK `vesselTypeId`.
