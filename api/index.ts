@@ -27,7 +27,16 @@ async function bootstrap() {
         .setTitle('Civil Vessels Registry API')
         .setDescription('Backend Web API for civil cargo vessels registry')
         .setVersion('1.0')
+        .addBearerAuth(
+          {
+            type: 'http',
+            scheme: 'bearer',
+            bearerFormat: 'JWT',
+          },
+          'access-token',
+        )
         .addTag('health')
+        .addTag('auth')
         .addTag('vessels')
         .addTag('manufacturers')
         .addTag('classification-societies')
@@ -49,15 +58,22 @@ async function bootstrap() {
   return bootstrapPromise;
 }
 
-export default async function handler(req: Request, res: Response) {
+export default async function handler(
+  req: Request,
+  res: Response,
+): Promise<void> {
   try {
     const app = await bootstrap();
-    return app(req, res);
+    app(req, res);
+    return;
   } catch (error: unknown) {
-    console.error('Serverless bootstrap failed', error);
-    return res.status(500).json({
+    const stack =
+      error instanceof Error ? error.stack : JSON.stringify(error, null, 2);
+    console.error('Serverless bootstrap failed', stack);
+    res.status(500).json({
       statusCode: 500,
       message: 'Internal server error',
     });
+    return;
   }
 }

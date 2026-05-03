@@ -86,46 +86,54 @@ export class AuthService {
       return DEFAULT_USERS;
     }
 
-    const parsed = JSON.parse(rawUsers) as unknown;
-    if (!Array.isArray(parsed)) {
-      throw new Error('AUTH_USERS_JSON must be a JSON array');
+    try {
+      const parsed = JSON.parse(rawUsers) as unknown;
+      if (!Array.isArray(parsed)) {
+        throw new Error('AUTH_USERS_JSON must be a JSON array');
+      }
+
+      return parsed.map((entry, index) => {
+        if (!entry || typeof entry !== 'object') {
+          throw new Error(`AUTH_USERS_JSON[${index}] must be an object`);
+        }
+
+        const candidate = entry as Record<string, unknown>;
+        const username = candidate.username;
+        const password = candidate.password;
+        const role = candidate.role;
+
+        if (
+          typeof username !== 'string' ||
+          typeof password !== 'string' ||
+          typeof role !== 'string'
+        ) {
+          throw new Error(
+            `AUTH_USERS_JSON[${index}] must include string username, password and role`,
+          );
+        }
+
+        if (!Object.values(Role).includes(role as Role)) {
+          throw new Error(
+            `AUTH_USERS_JSON[${index}] has unsupported role: ${role}`,
+          );
+        }
+
+        return {
+          id:
+            typeof candidate.id === 'string' && candidate.id.length > 0
+              ? candidate.id
+              : `${username}-id`,
+          username,
+          password,
+          role: role as Role,
+        };
+      });
+    } catch (error: unknown) {
+      console.error(
+        'Invalid AUTH_USERS_JSON configuration. Falling back to default local users.',
+        error,
+      );
+      return DEFAULT_USERS;
     }
-
-    return parsed.map((entry, index) => {
-      if (!entry || typeof entry !== 'object') {
-        throw new Error(`AUTH_USERS_JSON[${index}] must be an object`);
-      }
-
-      const candidate = entry as Record<string, unknown>;
-      const username = candidate.username;
-      const password = candidate.password;
-      const role = candidate.role;
-
-      if (
-        typeof username !== 'string' ||
-        typeof password !== 'string' ||
-        typeof role !== 'string'
-      ) {
-        throw new Error(
-          `AUTH_USERS_JSON[${index}] must include string username, password and role`,
-        );
-      }
-
-      if (!Object.values(Role).includes(role as Role)) {
-        throw new Error(
-          `AUTH_USERS_JSON[${index}] has unsupported role: ${role}`,
-        );
-      }
-
-      return {
-        id:
-          typeof candidate.id === 'string' && candidate.id.length > 0
-            ? candidate.id
-            : `${username}-id`,
-        username,
-        password,
-        role: role as Role,
-      };
-    });
   }
 }
