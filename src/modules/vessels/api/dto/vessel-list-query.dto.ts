@@ -74,6 +74,11 @@ export class VesselListQueryDto {
   @ApiPropertyOptional({ format: 'uuid' })
   @IsOptional()
   @IsUUID()
+  manufacturerId?: string;
+
+  @ApiPropertyOptional({ format: 'uuid' })
+  @IsOptional()
+  @IsUUID()
   shipbuilderId?: string;
 
   @ApiPropertyOptional({ example: 2010 })

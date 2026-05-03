@@ -23,6 +23,7 @@ export interface VesselModelProps {
   iceClass?: string | null;
   builtYear: number;
   classificationSocietyId?: string | null;
+  manufacturerId?: string | null;
   shipbuilderId?: string | null;
   mainEngines?: VesselEquipmentProps[];
   auxiliaryEngines?: VesselEquipmentProps[];
@@ -42,6 +43,7 @@ export interface VesselBasePersistencePayload {
   iceClass: string | null;
   builtYear: number;
   classificationSocietyId: string | null;
+  manufacturerId: string | null;
   shipbuilderId: string | null;
 }
 
@@ -67,6 +69,7 @@ export class Vessel {
     private readonly iceClassValue: string | null,
     private readonly builtYearValue: number,
     private readonly classificationSocietyIdValue: string | null,
+    private readonly manufacturerIdValue: string | null,
     private readonly shipbuilderIdValue: string | null,
     private readonly mainEnginesValue: VesselEquipment[],
     private readonly auxiliaryEnginesValue: VesselEquipment[],
@@ -107,6 +110,11 @@ export class Vessel {
       throw new Error('classificationSocietyId must be a valid UUID');
     }
 
+    const manufacturerId = props.manufacturerId ?? null;
+    if (manufacturerId !== null && !UUID_PATTERN.test(manufacturerId)) {
+      throw new Error('manufacturerId must be a valid UUID');
+    }
+
     const shipbuilderId = props.shipbuilderId ?? null;
     if (shipbuilderId !== null && !UUID_PATTERN.test(shipbuilderId)) {
       throw new Error('shipbuilderId must be a valid UUID');
@@ -130,6 +138,7 @@ export class Vessel {
       props.iceClass?.trim() || null,
       builtYear,
       classificationSocietyId,
+      manufacturerId,
       shipbuilderId,
       (props.mainEngines ?? []).map((item) => VesselEquipment.create(item)),
       (props.auxiliaryEngines ?? []).map((item) => VesselEquipment.create(item)),
@@ -154,6 +163,7 @@ export class Vessel {
         iceClass: this.iceClassValue,
         builtYear: this.builtYearValue,
         classificationSocietyId: this.classificationSocietyIdValue,
+        manufacturerId: this.manufacturerIdValue,
         shipbuilderId: this.shipbuilderIdValue,
       },
       equipment: {

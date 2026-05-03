@@ -178,6 +178,7 @@ async function main() {
         iceClass: vessel.iceClass,
         builtYear: vessel.builtYear,
         classificationSocietyId: classSociety.id,
+        manufacturerId: engineManufacturer.id,
         shipbuilderId: shipbuilder.id,
         mainEngines: {
           create: [

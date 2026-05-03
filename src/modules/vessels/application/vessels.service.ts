@@ -32,6 +32,7 @@ export class VesselsService {
 
   async create(dto: CreateVesselDto): Promise<VesselResponseDto> {
     await this.ensureClassificationSocietyExists(dto.classificationSocietyId);
+    await this.ensureVesselManufacturerExists(dto.manufacturerId);
     await this.ensureShipbuilderExists(dto.shipbuilderId);
 
     const model = this.createDomainModel(dto);
@@ -117,6 +118,7 @@ export class VesselsService {
     const mergedProps = this.mergeVesselProps(existing, dto);
 
     await this.ensureClassificationSocietyExists(mergedProps.classificationSocietyId ?? undefined);
+    await this.ensureVesselManufacturerExists(mergedProps.manufacturerId ?? undefined);
     await this.ensureShipbuilderExists(mergedProps.shipbuilderId ?? undefined);
 
     const model = this.createDomainModel(mergedProps);
@@ -190,6 +192,22 @@ export class VesselsService {
     }
   }
 
+  private async ensureVesselManufacturerExists(
+    manufacturerId?: string,
+  ): Promise<void> {
+    if (!manufacturerId) {
+      return;
+    }
+
+    const exists = await this.vesselsRepository.manufacturerExists(manufacturerId);
+
+    if (!exists) {
+      throw new BadRequestException(
+        `Manufacturer with id ${manufacturerId} does not exist`,
+      );
+    }
+  }
+
   private async ensureShipbuilderExists(shipbuilderId?: string): Promise<void> {
     if (!shipbuilderId) {
       return;
@@ -260,6 +278,7 @@ export class VesselsService {
       iceClass: entity.iceClass ?? undefined,
       builtYear: entity.builtYear,
       classificationSocietyId: entity.classificationSocietyId ?? undefined,
+      manufacturerId: entity.manufacturerId ?? undefined,
       shipbuilderId: entity.shipbuilderId ?? undefined,
       mainEngines: entity.mainEngines.map(
         (item: VesselWithDetails['mainEngines'][number]) => this.mapEquipment(item),
