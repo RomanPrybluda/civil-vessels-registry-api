@@ -16,15 +16,23 @@ import {
   VesselListResponseDto,
   VesselResponseDto,
 } from '../api/dto/vessel-response.dto';
-import { Vessel, VesselEquipmentProps, VesselModelProps } from '../domain/vessel.model';
-import { VesselWithDetails, VesselsRepository } from '../infrastructure/vessels.repository';
+import {
+  Vessel,
+  VesselEquipmentProps,
+  VesselModelProps,
+} from '../domain/vessel.model';
+import {
+  VesselWithDetails,
+  VesselsRepository,
+} from '../infrastructure/vessels.repository';
 
 const DEFAULT_PAGE = 1;
 const DEFAULT_PAGE_SIZE = 20;
 const DEFAULT_SORT_BY = VesselSortBy.CREATED_AT;
 const DEFAULT_SORT_ORDER = SortOrder.DESC;
 type VesselPersistencePayload = ReturnType<Vessel['toPersistence']>;
-type VesselEquipmentPersistenceItem = VesselPersistencePayload['equipment']['mainEngines'][number];
+type VesselEquipmentPersistenceItem =
+  VesselPersistencePayload['equipment']['mainEngines'][number];
 
 @Injectable()
 export class VesselsService {
@@ -55,7 +63,9 @@ export class VesselsService {
       query.builtYearTo !== undefined &&
       query.builtYearFrom > query.builtYearTo
     ) {
-      throw new BadRequestException('builtYearFrom cannot be greater than builtYearTo');
+      throw new BadRequestException(
+        'builtYearFrom cannot be greater than builtYearTo',
+      );
     }
 
     const page = query.page ?? DEFAULT_PAGE;
@@ -102,7 +112,9 @@ export class VesselsService {
     const entity = await this.vesselsRepository.findByImoNumber(imoNumber);
 
     if (!entity) {
-      throw new NotFoundException(`Vessel with IMO number ${imoNumber} not found`);
+      throw new NotFoundException(
+        `Vessel with IMO number ${imoNumber} not found`,
+      );
     }
 
     return VesselResponseDto.fromEntity(entity);
@@ -117,8 +129,12 @@ export class VesselsService {
 
     const mergedProps = this.mergeVesselProps(existing, dto);
 
-    await this.ensureClassificationSocietyExists(mergedProps.classificationSocietyId ?? undefined);
-    await this.ensureVesselManufacturerExists(mergedProps.manufacturerId ?? undefined);
+    await this.ensureClassificationSocietyExists(
+      mergedProps.classificationSocietyId ?? undefined,
+    );
+    await this.ensureVesselManufacturerExists(
+      mergedProps.manufacturerId ?? undefined,
+    );
     await this.ensureShipbuilderExists(mergedProps.shipbuilderId ?? undefined);
 
     const model = this.createDomainModel(mergedProps);
@@ -188,7 +204,9 @@ export class VesselsService {
     const allExist = await this.vesselsRepository.manufacturersExist(ids);
 
     if (!allExist) {
-      throw new BadRequestException('One or more manufacturerId values do not exist');
+      throw new BadRequestException(
+        'One or more manufacturerId values do not exist',
+      );
     }
   }
 
@@ -199,7 +217,8 @@ export class VesselsService {
       return;
     }
 
-    const exists = await this.vesselsRepository.manufacturerExists(manufacturerId);
+    const exists =
+      await this.vesselsRepository.manufacturerExists(manufacturerId);
 
     if (!exists) {
       throw new BadRequestException(
@@ -213,7 +232,8 @@ export class VesselsService {
       return;
     }
 
-    const exists = await this.vesselsRepository.shipbuilderExists(shipbuilderId);
+    const exists =
+      await this.vesselsRepository.shipbuilderExists(shipbuilderId);
 
     if (!exists) {
       throw new BadRequestException(
@@ -222,9 +242,7 @@ export class VesselsService {
     }
   }
 
-  private collectManufacturerIds(
-    payload: VesselPersistencePayload,
-  ): string[] {
+  private collectManufacturerIds(payload: VesselPersistencePayload): string[] {
     const ids = [
       ...payload.equipment.mainEngines.map(
         (item: VesselEquipmentPersistenceItem) => item.manufacturerId,
@@ -250,9 +268,7 @@ export class VesselsService {
       ...base,
       ...dto,
       mainEngines:
-        dto.mainEngines !== undefined
-          ? dto.mainEngines
-          : base.mainEngines,
+        dto.mainEngines !== undefined ? dto.mainEngines : base.mainEngines,
       auxiliaryEngines:
         dto.auxiliaryEngines !== undefined
           ? dto.auxiliaryEngines
@@ -281,13 +297,16 @@ export class VesselsService {
       manufacturerId: entity.manufacturerId ?? undefined,
       shipbuilderId: entity.shipbuilderId ?? undefined,
       mainEngines: entity.mainEngines.map(
-        (item: VesselWithDetails['mainEngines'][number]) => this.mapEquipment(item),
+        (item: VesselWithDetails['mainEngines'][number]) =>
+          this.mapEquipment(item),
       ),
       auxiliaryEngines: entity.auxiliaryEngines.map(
-        (item: VesselWithDetails['auxiliaryEngines'][number]) => this.mapEquipment(item),
+        (item: VesselWithDetails['auxiliaryEngines'][number]) =>
+          this.mapEquipment(item),
       ),
       shaftGenerators: entity.shaftGenerators.map(
-        (item: VesselWithDetails['shaftGenerators'][number]) => this.mapEquipment(item),
+        (item: VesselWithDetails['shaftGenerators'][number]) =>
+          this.mapEquipment(item),
       ),
     };
   }
@@ -311,14 +330,18 @@ export class VesselsService {
       error instanceof PrismaClientKnownRequestError &&
       error.code === 'P2002'
     ) {
-      throw new ConflictException('Vessel with the same IMO number already exists');
+      throw new ConflictException(
+        'Vessel with the same IMO number already exists',
+      );
     }
 
     if (
       error instanceof PrismaClientKnownRequestError &&
       error.code === 'P2003'
     ) {
-      throw new BadRequestException('Invalid foreign key reference in vessel payload');
+      throw new BadRequestException(
+        'Invalid foreign key reference in vessel payload',
+      );
     }
   }
 }
